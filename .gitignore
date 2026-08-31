@@ -1,19 +1,61 @@
+# Python bytecode and native extensions
 __pycache__/
 *.py[cod]
+*$py.class
+*.pyd
+*.so
+
+# Packaging and build artifacts
 *.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments and local package managers
+.venv/
+.venv-*/
+venv/
+env/
+ENV/
+.conda/
+
+# Test, coverage, lint, and type-check caches
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+.pyre/
+.tox/
+.nox/
+.hypothesis/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
-build/
-dist/
-.venv/
-.venv-trf/
-.conda/
-.env
-*.log
 
+# Local credentials and machine-specific environment files
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local model and download caches
+/.cache/
+/cache/
+/models/
+/huggingface/
+
+# Generated pipeline outputs; retain empty directory placeholders
 /output/prompts/*
 !/output/prompts/.gitkeep
 /output/runs/*
@@ -25,7 +67,13 @@ dist/
 /output/trf_full_runs/*
 !/output/trf_full_runs/.gitkeep
 
+# Local scratch notes
+/333.md
+
+# Editors and operating-system metadata
 .idea/
 .vscode/
+*.code-workspace
 .DS_Store
 Thumbs.db
+Desktop.ini
