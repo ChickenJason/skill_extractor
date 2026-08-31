@@ -1,0 +1,13 @@
+name: skill-sentence-processor
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cpu
+      - openai>=2,<3
+      - numpy==1.26.4
+      - scikit-learn==1.6.1
+      - torch==2.5.1+cpu
+      - transformers==4.57.1

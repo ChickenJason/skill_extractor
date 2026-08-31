@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "pipeline_version": "trf-target-extractor-v1",
+  "configuration_role": "full-run-template",
+  "source_trf": {
+    "run_id": "generated-offline-run",
+    "run_root": "output/trf_runs/generated-offline-run",
+    "files": {
+      "manifest": {
+        "path": "manifest.json",
+        "sha256": "<generated-by-rerun-all-trf>"
+      },
+      "corpus": {
+        "path": "corpus/records.jsonl",
+        "sha256": "<generated-by-rerun-all-trf>"
+      },
+      "candidates": {
+        "path": "candidates/selected_trfs.json",
+        "sha256": "<generated-by-rerun-all-trf>"
+      },
+      "pseudo_trfs": {
+        "path": "demonstrations/pseudo_trfs.jsonl",
+        "sha256": "<generated-by-rerun-all-trf>"
+      }
+    }
+  },
+  "source_decisions": {
+    "path": "output/runs/span-xmlc-base5-replay-majority3-anchor-v1/selected/decisions.jsonl",
+    "sha256": "<generated-by-rerun-all-trf>",
+    "expected_count": 326
+  },
+  "targets": {
+    "independent_input": "data/raw/target_sentences.json"
+  },
+  "provider": {
+    "name": "aliyun-model-studio",
+    "api_key": "${DASHSCOPE_API_KEY}",
+    "base_url": "${DASHSCOPE_BASE_URL}"
+  },
+  "embedding": {
+    "model": "qwen3.7-text-embedding",
+    "dimensions": 1024,
+    "batch_size": 20
+  },
+  "retrieval": {
+    "nearest_neighbors": 50,
+    "demonstrations": 16,
+    "similarity_decimals": 10
+  },
+  "candidates": {
+    "expected_main_trfs": 20
+  },
+  "chat": {
+    "model": "qwen3.7-plus-2026-05-26",
+    "enable_thinking": false,
+    "structured_output": true,
+    "temperature": 0.0,
+    "stage1_max_tokens": 128,
+    "stage2_max_tokens": 512,
+    "timeout_seconds": 120,
+    "max_retries": 5,
+    "max_prompt_characters": 60000
+  },
+  "diagnostics": {
+    "review_sample_size": 20
+  },
+  "output": {
+    "runs_root": "output/trf_target_runs"
+  }
+}

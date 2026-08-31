@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "pipeline_version": "trf-offline-v2",
+  "source": {
+    "runs_root": "output/runs",
+    "manifest": "manifest.json",
+    "decisions": "selected/decisions.jsonl",
+    "aggregation_audit": "aggregated/aggregation_audit.jsonl",
+    "expected_counts": {
+      "total": 326,
+      "accepted": 225,
+      "negative": 88,
+      "unsolved": 13,
+      "abstained": 0,
+      "formal": 313
+    }
+  },
+  "output": {
+    "runs_root": "output/trf_runs",
+    "schema_version": "trf-offline-v2"
+  },
+  "tokenization": {
+    "normalization": "NFKC",
+    "technical_characters": ".+#/-",
+    "exclude_tokens_containing_digits": true,
+    "stopwords": "scikit-learn-english",
+    "anonymous_placeholder_pattern": "<[A-Z][A-Z0-9_-]*>"
+  },
+  "candidates": {
+    "type": "Skill",
+    "max_trfs": 20,
+    "rho": 3.0,
+    "direction_gate": true,
+    "mi_log_base": "natural"
+  },
+  "model": {
+    "name": "bert-base-cased",
+    "revision": "cd5ef92a9fb2f889e972770a36d4ed042daf221e",
+    "hidden_size": 768,
+    "max_subwords": 512,
+    "top_k": 5,
+    "seed": 42,
+    "device": "cpu",
+    "distance_decimals": 8
+  }
+}

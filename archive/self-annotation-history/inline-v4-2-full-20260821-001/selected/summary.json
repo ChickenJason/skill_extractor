@@ -1,0 +1,16 @@
+{
+  "updated_at": "2026-08-20T23:05:03+00:00",
+  "annotation_schema": "skill-inline-span-v1",
+  "consensus_schema": "token-bio-consensus-v1",
+  "decisions": 326,
+  "statuses": {
+    "accepted": 188,
+    "review": 40,
+    "abstained": 10,
+    "negative": 88
+  },
+  "formal_annotations": 276,
+  "formal_positive_annotations": 188,
+  "formal_negative_annotations": 88,
+  "formal_positive_spans": 389
+}

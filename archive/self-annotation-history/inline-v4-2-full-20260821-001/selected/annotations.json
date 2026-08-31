@@ -1,0 +1,2235 @@
+[
+  {
+    "idx": 1,
+    "sentence": "Work in a way that is patient-centred and inclusive .",
+    "has_skill": 1,
+    "spans": [
+      "patient-centred",
+      "inclusive"
+    ]
+  },
+  {
+    "idx": 2,
+    "sentence": "Provide your patients with a safe and effective course of treatment .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 3,
+    "sentence": "See IT systems as an aid in your work and do what you can to be at the forefront of developments in this area .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 4,
+    "sentence": "Be good humoured loyal dedicated and flexible .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 5,
+    "sentence": "As a promotor you therefore need to engage people in the streets and inspire them to support the cause by conveying knowledge about how <ORGANIZATION> works .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 6,
+    "sentence": "You are: Extroverted and energetic Excited about meeting new people and enjoy interacting with many different characters .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 7,
+    "sentence": "Result oriented and work constructively towards reaching goals .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 8,
+    "sentence": "Good at acquiring new skills and using them actively to improve your performance .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 9,
+    "sentence": "Motivated by overcoming obstacles and continuously working on your own development .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 10,
+    "sentence": "Danish skills are not necessary some of our best fundraisers only speak English",
+    "has_skill": 1,
+    "spans": [
+      "Danish",
+      "English"
+    ]
+  },
+  {
+    "idx": 11,
+    "sentence": "You must however hold a valid visa to work in <LOCATION> in order to be considered for the position .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 13,
+    "sentence": "Good team work and cooperation with your colleagues and daily leader 3F's union agreement with DMA",
+    "has_skill": 1,
+    "spans": [
+      "team work",
+      "cooperation"
+    ]
+  },
+  {
+    "idx": 14,
+    "sentence": "You can walk on stairs",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 16,
+    "sentence": "You have a acceptable criminal record",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 18,
+    "sentence": "You are motivated for the work",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 19,
+    "sentence": "You have an good structure and can follow a route and register when a shipment is delivered .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 20,
+    "sentence": "You do your work professionally with high quality",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 21,
+    "sentence": "You are reliable responsible and trustworthy",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 22,
+    "sentence": "You are responsible and conscientious",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 23,
+    "sentence": "You can work in all kinds of weather at night",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 24,
+    "sentence": "You are a good colleague",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 25,
+    "sentence": "We are looking for a Head of Digital Supply Chain Community who can lead and implement an aligned strategy globally .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 26,
+    "sentence": "As <PROFESSION> for Digital Supply Chain Community you will drive the Digital Supply Chain Community globally which consists of representatives from our four business segments IT procurement and corporate functions .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 28,
+    "sentence": "You will identify Digital Supply Chain initiatives that can scale up to have significant impact and value for the group .",
+    "has_skill": 1,
+    "spans": [
+      "Digital Supply Chain"
+    ]
+  },
+  {
+    "idx": 29,
+    "sentence": "You will collaborate with internal customers by accelerating and improving their digital projects with digital tools agile program management subject matter expertise in digital solutions",
+    "has_skill": 1,
+    "spans": [
+      "agile program management",
+      "digital solutions"
+    ]
+  },
+  {
+    "idx": 30,
+    "sentence": "You will ensure a continued support knowledge sharing across segments",
+    "has_skill": 1,
+    "spans": [
+      "knowledge sharing"
+    ]
+  },
+  {
+    "idx": 31,
+    "sentence": "Solid hands on experience from Digital Supply Chain",
+    "has_skill": 1,
+    "spans": [
+      "Digital Supply Chain"
+    ]
+  },
+  {
+    "idx": 32,
+    "sentence": "Energetic willing and able to find compromises between multiple and sometimes conflicting interests Strategic mindset Big picture Thinking Deep Dive Customer Obsession Deliver Results Ownership and Implementation .",
+    "has_skill": 1,
+    "spans": [
+      "Strategic mindset",
+      "Big picture Thinking",
+      "Deep Dive",
+      "Customer Obsession",
+      "Deliver Results",
+      "Ownership",
+      "Implementation"
+    ]
+  },
+  {
+    "idx": 33,
+    "sentence": "Digital Savvy and experienced in fields like data analytics process transformation IoT ( Industrial Automation ) and new business models ( e-commerce startups agile ) Excellent communication presentation and facilitation skills Well-structured and independent working style Willingness to travel For further information about the position please contact Snr VP <ORGANIZATION> <ORGANIZATION> <ORGANIZATION> <NAME> <NAME> <NAME> <CONTACT> <CONTACT> <CONTACT> <NAME> <NAME> <NAME> Head DBS manufacturing on <CONTACT> <CONTACT> <CONTACT> .",
+    "has_skill": 1,
+    "spans": [
+      "Digital Savvy",
+      "data analytics",
+      "process transformation",
+      "IoT",
+      "new business models",
+      "communication",
+      "presentation",
+      "facilitation"
+    ]
+  },
+  {
+    "idx": 37,
+    "sentence": "Most important of all is that youre a self-starter enjoy a fast-paced work environment and want an opportunity to build on your existing experience and learn and develop within the role .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 38,
+    "sentence": "We are looking for an ambitious student with interest in market analysis who possess both strong communication and analytical skills",
+    "has_skill": 1,
+    "spans": [
+      "market analysis",
+      "communication",
+      "analytical skills"
+    ]
+  },
+  {
+    "idx": 39,
+    "sentence": "They could be: - Insights creation and commenting - Creation/ optimization of PPT .",
+    "has_skill": 1,
+    "spans": [
+      "Insights creation",
+      "commenting",
+      "Creation/ optimization of PPT"
+    ]
+  },
+  {
+    "idx": 40,
+    "sentence": "presentations - Revising stimulus material for research projects - Analysis of quantitative data",
+    "has_skill": 1,
+    "spans": [
+      "presentations",
+      "Revising stimulus material for research projects",
+      "Analysis of quantitative data"
+    ]
+  },
+  {
+    "idx": 43,
+    "sentence": "You have a good understanding of marketing and it is a big advantage if your studies include relevant marketing or business courses .",
+    "has_skill": 1,
+    "spans": [
+      "marketing",
+      "marketing",
+      "business"
+    ]
+  },
+  {
+    "idx": 44,
+    "sentence": "You are probably well under way with a relevant academic marketing education ( Cand.merc Cand.negot Cand.oecon ) and you might already have relevant marketing or market research experience .",
+    "has_skill": 1,
+    "spans": [
+      "marketing",
+      "marketing",
+      "market research"
+    ]
+  },
+  {
+    "idx": 45,
+    "sentence": "You are good at thinking visually communicate your ideas and messages .",
+    "has_skill": 1,
+    "spans": [
+      "thinking visually",
+      "communicate your ideas and messages"
+    ]
+  },
+  {
+    "idx": 46,
+    "sentence": "You are ambitious goal oriented show engagement and demonstrate positive thinking and a can-do attitude .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 47,
+    "sentence": "You see great challenges in being tasked with tactical as well as strategic marketing problems learn from them and contribute to their solution .",
+    "has_skill": 1,
+    "spans": [
+      "tactical as well as strategic marketing"
+    ]
+  },
+  {
+    "idx": 48,
+    "sentence": "You have a strong business understanding and is strategic analytical and communicative in how you approach tasks .",
+    "has_skill": 1,
+    "spans": [
+      "business understanding"
+    ]
+  },
+  {
+    "idx": 49,
+    "sentence": "You like to dive into the numbers analyze them and to turn numbers into actionable insights .",
+    "has_skill": 1,
+    "spans": [
+      "analyze them",
+      "actionable insights"
+    ]
+  },
+  {
+    "idx": 51,
+    "sentence": "Experience with SPSS or similar is an advantage .",
+    "has_skill": 1,
+    "spans": [
+      "SPSS"
+    ]
+  },
+  {
+    "idx": 53,
+    "sentence": "Strong English skills are a prerequisite both verbally and in writing as it is the official company language .",
+    "has_skill": 1,
+    "spans": [
+      "English"
+    ]
+  },
+  {
+    "idx": 54,
+    "sentence": "A great opportunity for professional and personal growth Picking and packing",
+    "has_skill": 1,
+    "spans": [
+      "Picking",
+      "packing"
+    ]
+  },
+  {
+    "idx": 56,
+    "sentence": "Other tasks will be: Receiving and registering goods Controlling returned goods Palletizing and shipments",
+    "has_skill": 1,
+    "spans": [
+      "Receiving and registering goods",
+      "Controlling returned goods",
+      "Palletizing and shipments"
+    ]
+  },
+  {
+    "idx": 57,
+    "sentence": "Talented forwarehouse workers The warehouse is looking for new employees that: Are perfectionists and enjoy manual work Are precise and goal oriented Are team players and helpful colleagues",
+    "has_skill": 1,
+    "spans": [
+      "manual work"
+    ]
+  },
+  {
+    "idx": 59,
+    "sentence": "Specialized in transport and logistics",
+    "has_skill": 1,
+    "spans": [
+      "transport",
+      "logistics"
+    ]
+  },
+  {
+    "idx": 60,
+    "sentence": "Are you passionate about people management and development?",
+    "has_skill": 1,
+    "spans": [
+      "people management",
+      "development"
+    ]
+  },
+  {
+    "idx": 61,
+    "sentence": "Can you motivate and set the direction for your employees?",
+    "has_skill": 1,
+    "spans": [
+      "motivate",
+      "set the direction"
+    ]
+  },
+  {
+    "idx": 62,
+    "sentence": "As <PROFESSION> <PROFESSION> for the production team you will get a key role in the department in terms of ensuring the pace of production .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 63,
+    "sentence": "You are expected to be able to further develop your team - both personally and professionally .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 64,
+    "sentence": "As Associate Manager you will be responsible for daily and professional leadership of 26 committed employees in the production team which primarily consists of hourly-paid employees .",
+    "has_skill": 1,
+    "spans": [
+      "leadership"
+    ]
+  },
+  {
+    "idx": 65,
+    "sentence": "You will set the direction coach and develop your team .",
+    "has_skill": 1,
+    "spans": [
+      "coach",
+      "develop your team"
+    ]
+  },
+  {
+    "idx": 66,
+    "sentence": "You and your team will ensure that production runs in accordance with GMP and other requirements described in Novo Nordisk standards .",
+    "has_skill": 1,
+    "spans": [
+      "GMP"
+    ]
+  },
+  {
+    "idx": 67,
+    "sentence": "You will focus on enabling your team to deliver in a timely and flawless manner which means that you run or participate in systematic problem solving .",
+    "has_skill": 1,
+    "spans": [
+      "systematic problem solving"
+    ]
+  },
+  {
+    "idx": 68,
+    "sentence": "You probably have a science education combined with experience from pharmaceutical production .",
+    "has_skill": 1,
+    "spans": [
+      "science education",
+      "pharmaceutical production"
+    ]
+  },
+  {
+    "idx": 69,
+    "sentence": "You have a natural interest in managing people and your CV shows at least two years of management experience .",
+    "has_skill": 1,
+    "spans": [
+      "managing people",
+      "management"
+    ]
+  },
+  {
+    "idx": 70,
+    "sentence": "You know the value of gaining trust and respect from your colleagues .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 71,
+    "sentence": "You are structured and able to keep the overall view and you thrive in a busy and constantly changing working day .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 72,
+    "sentence": "You will need your ability to prioritize and your belief that there is always a solution .",
+    "has_skill": 1,
+    "spans": [
+      "prioritize"
+    ]
+  },
+  {
+    "idx": 73,
+    "sentence": "As you will work with people at all levels of the organization it is important to have good communication and collaboration skills .",
+    "has_skill": 1,
+    "spans": [
+      "communication",
+      "collaboration"
+    ]
+  },
+  {
+    "idx": 74,
+    "sentence": "GMP and LEAN are natural elements in your working day .",
+    "has_skill": 1,
+    "spans": [
+      "GMP",
+      "LEAN"
+    ]
+  },
+  {
+    "idx": 75,
+    "sentence": "You work in a structured and targeted manner you never compromise on quality and you take pride in your team always solving its tasks for the good of the whole department .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 76,
+    "sentence": "You ensure continuous improvements of your own and your team's work processes and you see changes and challenges as opportunities to develop yourself as well as your team .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 77,
+    "sentence": "The research group of <NAME> <NAME> is looking for a highly motivated ambitious and reliable candidate to join our laboratory focusing on understanding the role of non-coding RNAs in development and cancer .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 79,
+    "sentence": "Perform molecular biology techniques in particular PCR restriction and cloning reactions and DNA/RNA and protein purification procedures .",
+    "has_skill": 1,
+    "spans": [
+      "molecular biology techniques",
+      "PCR restriction and cloning reactions",
+      "DNA/RNA and protein purification procedures"
+    ]
+  },
+  {
+    "idx": 80,
+    "sentence": "Setting up routine imaging and cell sorting experiments and sample preparation. .",
+    "has_skill": 1,
+    "spans": [
+      "imaging",
+      "cell sorting experiments",
+      "sample preparation"
+    ]
+  },
+  {
+    "idx": 82,
+    "sentence": "The Laboratory Technician/Medical Laboratory Technologist will directly participate in the research projects and will be responsible for training and providing technical assistance for students and postdoctoral fellows in the group .",
+    "has_skill": 1,
+    "spans": [
+      "Laboratory Technician",
+      "Medical Laboratory Technologist",
+      "training",
+      "technical assistance"
+    ]
+  },
+  {
+    "idx": 84,
+    "sentence": "You must be good at working independently and organized and be self-motivated",
+    "has_skill": 1,
+    "spans": [
+      "working independently",
+      "organized",
+      "self-motivated"
+    ]
+  },
+  {
+    "idx": 85,
+    "sentence": "Have good interpersonal and communication skills both in Danish and English; spoken as written",
+    "has_skill": 1,
+    "spans": [
+      "interpersonal",
+      "communication"
+    ]
+  },
+  {
+    "idx": 86,
+    "sentence": "Desirable experience and skills: Previous experience with basic molecular biology technique .",
+    "has_skill": 1,
+    "spans": [
+      "molecular biology technique"
+    ]
+  },
+  {
+    "idx": 87,
+    "sentence": "Experience with mouse research is ideal but not necessary .",
+    "has_skill": 1,
+    "spans": [
+      "mouse research"
+    ]
+  },
+  {
+    "idx": 88,
+    "sentence": "Do you have the drive to increase the value of IT systems for your colleagues within a growing international business?",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 89,
+    "sentence": "Can you maintain and develop effective relationships?",
+    "has_skill": 1,
+    "spans": [
+      "effective relationships"
+    ]
+  },
+  {
+    "idx": 90,
+    "sentence": "And do you enjoy working in a dynamic environment?",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 91,
+    "sentence": "You will support your colleagues worldwide",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 92,
+    "sentence": "As an IT Support Assistant you will have a broad interface with your <ORGANIZATION> colleagues around the world and step in when they need your help and advice on their IT systems including computer equipment telephony and application support .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 93,
+    "sentence": "Your primary task will be to familiarise yourself with your colleagues' situation and use your service skills to assist them as efficiently as possible .",
+    "has_skill": 1,
+    "spans": [
+      "service skills"
+    ]
+  },
+  {
+    "idx": 94,
+    "sentence": "Your working day will typically be busy and you will need to prioritise incoming requests and tick each task off the list as you complete them .",
+    "has_skill": 1,
+    "spans": [
+      "prioritise incoming requests"
+    ]
+  },
+  {
+    "idx": 96,
+    "sentence": "Your day-to-day work will be challenging and so close co-operation will be at the top of the agenda to ensure that we can make a difference to the world we live in .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 97,
+    "sentence": "Independent Support Assistant and skilled communicator",
+    "has_skill": 1,
+    "spans": [
+      "Independent Support Assistant",
+      "skilled communicator"
+    ]
+  },
+  {
+    "idx": 98,
+    "sentence": "Ideally you should have undergone training in IT support and have at least one year of experience working as an IT Support Assistant .",
+    "has_skill": 1,
+    "spans": [
+      "IT support"
+    ]
+  },
+  {
+    "idx": 99,
+    "sentence": "You should be a competent user of <ORGANIZATION> systems and familiar with ITSM tools and application support .",
+    "has_skill": 1,
+    "spans": [
+      "ITSM tools",
+      "application support"
+    ]
+  },
+  {
+    "idx": 100,
+    "sentence": "Your personal qualities include taking pride in your ability to work independently and seeing your duties through to the end .",
+    "has_skill": 1,
+    "spans": [
+      "work independently"
+    ]
+  },
+  {
+    "idx": 101,
+    "sentence": "You take a structured approach to work and are skilled in prioritising your tasks and identifying those that are the most important .",
+    "has_skill": 1,
+    "spans": [
+      "prioritising your tasks",
+      "identifying those that are the most important"
+    ]
+  },
+  {
+    "idx": 102,
+    "sentence": "You thrive in an outgoing role with a broad interface right across the organisation and are able to communicate concisely and accurately with colleagues at all levels .",
+    "has_skill": 1,
+    "spans": [
+      "communicate concisely and accurately"
+    ]
+  },
+  {
+    "idx": 103,
+    "sentence": "You enjoy providing the best possible service demonstrating persistence patience and attentiveness .",
+    "has_skill": 1,
+    "spans": [
+      "persistence",
+      "patience",
+      "attentiveness"
+    ]
+  },
+  {
+    "idx": 104,
+    "sentence": "In addition you enjoy working in a dynamic environment with unpredictable duties .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 105,
+    "sentence": "Finally you can speak and write English at an advanced level .",
+    "has_skill": 1,
+    "spans": [
+      "English"
+    ]
+  },
+  {
+    "idx": 106,
+    "sentence": "We work with security-classified projects and therefore you as an employee at Systematic need to have security clearance .",
+    "has_skill": 1,
+    "spans": [
+      "security clearance"
+    ]
+  },
+  {
+    "idx": 107,
+    "sentence": "You will work directly with business leadership business users and the R&D to drive development of the software product roadmap find innovative solutions for existing and new technology needs and stays on top of current trends to develop long term plans for the success of the dedicated product .",
+    "has_skill": 1,
+    "spans": [
+      "software product roadmap",
+      "innovative solutions",
+      "long term plans"
+    ]
+  },
+  {
+    "idx": 108,
+    "sentence": "You embrace work load enthusiastically and you are comfortable with a fast paced quickly changing work environment with this great mixture of technical and business skills can articulate the vision in the way others will understand and what ‘s more important will follow it .",
+    "has_skill": 1,
+    "spans": [
+      "technical",
+      "business skills",
+      "articulate the vision"
+    ]
+  },
+  {
+    "idx": 109,
+    "sentence": "Having experience from project management B2B market UX and development will help you to succeed in that creative role .",
+    "has_skill": 1,
+    "spans": [
+      "project management",
+      "B2B market UX",
+      "development"
+    ]
+  },
+  {
+    "idx": 111,
+    "sentence": "Product manager needs to strategically lead the product development process .",
+    "has_skill": 1,
+    "spans": [
+      "product development process"
+    ]
+  },
+  {
+    "idx": 112,
+    "sentence": "This is absolutely essential for ability to correctly brief the other departments and ability to challenge outcomes .",
+    "has_skill": 1,
+    "spans": [
+      "brief the other departments",
+      "challenge outcomes"
+    ]
+  },
+  {
+    "idx": 113,
+    "sentence": "Specs that we're after: Very good level of English",
+    "has_skill": 1,
+    "spans": [
+      "English"
+    ]
+  },
+  {
+    "idx": 114,
+    "sentence": "Knowledge of Czech welcomed but not a must",
+    "has_skill": 1,
+    "spans": [
+      "Czech"
+    ]
+  },
+  {
+    "idx": 115,
+    "sentence": "Product / Project Management skills",
+    "has_skill": 1,
+    "spans": [
+      "Product / Project Management"
+    ]
+  },
+  {
+    "idx": 116,
+    "sentence": "Understanding of UX development process",
+    "has_skill": 1,
+    "spans": [
+      "UX development process"
+    ]
+  },
+  {
+    "idx": 117,
+    "sentence": "Experiences with user testing and understanding the results",
+    "has_skill": 1,
+    "spans": [
+      "user testing",
+      "understanding the results"
+    ]
+  },
+  {
+    "idx": 118,
+    "sentence": "Excellent communication skills Passion for a change",
+    "has_skill": 1,
+    "spans": [
+      "communication skills"
+    ]
+  },
+  {
+    "idx": 119,
+    "sentence": "Ability to establish rapport and bond with a business partner The ability to think outside the box The ability to clearly and professionally present information <ORGANIZATION> is an enthusiastic team of accomplished tech professionals based in <LOCATION> <LOCATION> .",
+    "has_skill": 1,
+    "spans": [
+      "establish rapport",
+      "bond with a business partner",
+      "think outside the box",
+      "present information"
+    ]
+  },
+  {
+    "idx": 120,
+    "sentence": "We are seeking to recruit an <PROFESSION> <PROFESSION> <PROFESSION> for generation and development of new and existing business opportunities with international clients .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 121,
+    "sentence": "The successful candidate will be a credible international sales professional ideally with experience from some of our business areas and with knowledge of the market place .",
+    "has_skill": 1,
+    "spans": [
+      "international sales",
+      "knowledge of the market place"
+    ]
+  },
+  {
+    "idx": 123,
+    "sentence": "The core of the role includes all aspects of the international sales and business development process focused on building new business relationships as well as building on existing success already in place .",
+    "has_skill": 1,
+    "spans": [
+      "international sales",
+      "business development"
+    ]
+  },
+  {
+    "idx": 124,
+    "sentence": "You will be reporting to the Head of Sales .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 125,
+    "sentence": "Primary Focus Build new major business opportunities in <LOCATION> and <LOCATION> by sales canvassing .",
+    "has_skill": 1,
+    "spans": [
+      "sales canvassing"
+    ]
+  },
+  {
+    "idx": 126,
+    "sentence": "Develop implement and manage sales and relationships with new clients .",
+    "has_skill": 1,
+    "spans": [
+      "sales",
+      "relationships with new clients"
+    ]
+  },
+  {
+    "idx": 127,
+    "sentence": "Negotiate and close business to exceed targets by being in regular telephonic and face to face contact with clients .",
+    "has_skill": 1,
+    "spans": [
+      "Negotiate",
+      "close business"
+    ]
+  },
+  {
+    "idx": 128,
+    "sentence": "Generate leads through market and client-research .",
+    "has_skill": 1,
+    "spans": [
+      "market and client-research"
+    ]
+  },
+  {
+    "idx": 129,
+    "sentence": "Be able to break into medium to large organisations at different levels .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 130,
+    "sentence": "Manage and be part of all processes of a typical sales cycle from A-Z .",
+    "has_skill": 1,
+    "spans": [
+      "sales cycle"
+    ]
+  },
+  {
+    "idx": 131,
+    "sentence": "Monitor competitor activity and market dynamics .",
+    "has_skill": 1,
+    "spans": [
+      "competitor activity",
+      "market dynamics"
+    ]
+  },
+  {
+    "idx": 132,
+    "sentence": "Recognise and recommend improvements to existing processes to improve revenue performance .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 133,
+    "sentence": "Personality and experience You are inspiring persuasive and convincing in your behavior .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 134,
+    "sentence": "You thrive with sales canvassing cold calling and booking meetings on the phone .",
+    "has_skill": 1,
+    "spans": [
+      "sales canvassing",
+      "cold calling",
+      "booking meetings on the phone"
+    ]
+  },
+  {
+    "idx": 135,
+    "sentence": "You are outgoing energetic and able to work independently as well as in a team .",
+    "has_skill": 1,
+    "spans": [
+      "work independently"
+    ]
+  },
+  {
+    "idx": 136,
+    "sentence": "You are persistent and have 2-3 years of sales experience within B2B and concept sales .",
+    "has_skill": 1,
+    "spans": [
+      "sales",
+      "concept sales"
+    ]
+  },
+  {
+    "idx": 137,
+    "sentence": "Graduation from a business school is preferred .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 138,
+    "sentence": "It is essential that you master English fluently and an absolute advantage if you speak and write French or German at an advanced level .",
+    "has_skill": 1,
+    "spans": [
+      "English",
+      "French",
+      "German"
+    ]
+  },
+  {
+    "idx": 141,
+    "sentence": "The role will involve; Contributing to a cross functional agile team in the elaboration development and testing of user stories",
+    "has_skill": 1,
+    "spans": [
+      "agile"
+    ]
+  },
+  {
+    "idx": 142,
+    "sentence": "Actively taking part in sprint planning backlog grooming and task estimation Hands-on development and modification of frameworks common components and business components",
+    "has_skill": 1,
+    "spans": [
+      "sprint planning",
+      "backlog grooming",
+      "task estimation",
+      "development",
+      "modification"
+    ]
+  },
+  {
+    "idx": 143,
+    "sentence": "Hands-on development of unit tests across all developed components and contribution to the creation of automation in higher levels of the test pyramid",
+    "has_skill": 1,
+    "spans": [
+      "unit tests",
+      "automation"
+    ]
+  },
+  {
+    "idx": 144,
+    "sentence": "Actively refactoring code and continual contribution to code quality improvements",
+    "has_skill": 1,
+    "spans": [
+      "refactoring code",
+      "code quality improvements"
+    ]
+  },
+  {
+    "idx": 146,
+    "sentence": "You will work and communicate across geographical and cultural borders that will enable you to build a strong professional network .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 147,
+    "sentence": "Key responsibilities  Participation in the elaboration of user stories ( technical and functional) .",
+    "has_skill": 1,
+    "spans": [
+      "user stories"
+    ]
+  },
+  {
+    "idx": 148,
+    "sentence": "Agree stories are sufficiently described for their implementation verification and delivery.",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 149,
+    "sentence": "Responsible for the quality design and implementation ( supportable maintainable scalable performant secure ) of applications delivering business value Ensuring builds are kept green and the code management strategy ( branching ) is closely followed.",
+    "has_skill": 1,
+    "spans": [
+      "quality design",
+      "implementation",
+      "code management strategy"
+    ]
+  },
+  {
+    "idx": 150,
+    "sentence": "Raising capability and standards within team; pairing on tasks peer review of team members code and constructive feedback for improvement in both the code base and team capability ( embraces blame free feedback)",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 151,
+    "sentence": "Proactive contribution to continual improvements within your team through both active participation in retrospectives and from engagement with cross team bestpractice communities",
+    "has_skill": 1,
+    "spans": [
+      "retrospectives"
+    ]
+  },
+  {
+    "idx": 153,
+    "sentence": "Support the recruitment activities for new developers hires",
+    "has_skill": 1,
+    "spans": [
+      "recruitment"
+    ]
+  },
+  {
+    "idx": 155,
+    "sentence": "Excellent implementation skills primarily Java SpringBoot and associated unit testing frameworks Expertise in development within an Agile envirnoment  Effective integration of testing into development workflow; using appropriate test frameworks Build tooling ( e.g .",
+    "has_skill": 1,
+    "spans": [
+      "implementation skills",
+      "Java SpringBoot",
+      "unit testing frameworks",
+      "development",
+      "Agile envirnoment",
+      "integration of testing into development workflow",
+      "test frameworks",
+      "Build tooling"
+    ]
+  },
+  {
+    "idx": 156,
+    "sentence": "Maven) Capability for occasional work in UI layer.",
+    "has_skill": 1,
+    "spans": [
+      "UI layer"
+    ]
+  },
+  {
+    "idx": 157,
+    "sentence": "Good experience of continual delivery pipeline tools ( Jenkins Ansible . . )  Good verbal communication skills; able to articulate clearly to technical team members during agile ceremonies and to work with product owners in the elaboration of user stories",
+    "has_skill": 1,
+    "spans": [
+      "continual delivery pipeline tools",
+      "verbal communication skills"
+    ]
+  },
+  {
+    "idx": 158,
+    "sentence": "Able to work in a highly collaborative environment as part of an effective delivery squad Good critical reasoning and problem solving skillsExperience",
+    "has_skill": 1,
+    "spans": [
+      "critical reasoning",
+      "problem solving"
+    ]
+  },
+  {
+    "idx": 159,
+    "sentence": "Agile software development experience preferable with experience of XP or other high collaboration approaches Using BDD and TDD approaches and tooling Fast turnaround development experience Continuous delivery including shippable product per sprint delivery cadence Service orientated and microservice architecture Shared-nothing architecture domain driven design and bounded context High volume transactional systems Use of API gateway products ( Akana pref)",
+    "has_skill": 1,
+    "spans": [
+      "Agile software development",
+      "XP",
+      "BDD",
+      "TDD",
+      "Continuous delivery",
+      "Service orientated",
+      "microservice architecture",
+      "Shared-nothing architecture",
+      "domain driven design",
+      "bounded context",
+      "High volume transactional systems",
+      "API gateway"
+    ]
+  },
+  {
+    "idx": 161,
+    "sentence": "Active contributor to open source projects would be beneficial",
+    "has_skill": 1,
+    "spans": [
+      "open source projects"
+    ]
+  },
+  {
+    "idx": 162,
+    "sentence": "We expect you to have a very good mechanical understanding and a solid working knowledge within automation and process optimization .",
+    "has_skill": 1,
+    "spans": [
+      "mechanical understanding",
+      "automation",
+      "process optimization"
+    ]
+  },
+  {
+    "idx": 163,
+    "sentence": "The job entails support and problem-solving aboard vessels or at yards which will include much travel- activity .",
+    "has_skill": 1,
+    "spans": [
+      "support",
+      "problem-solving"
+    ]
+  },
+  {
+    "idx": 164,
+    "sentence": "You will primarily work with our rotating equipment decanters and high-speed separators - and it is expected that you are always capable of putting put the customer first .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 165,
+    "sentence": "About the job Preventive maintenance of supplied equipment and machines .",
+    "has_skill": 1,
+    "spans": [
+      "Preventive maintenance"
+    ]
+  },
+  {
+    "idx": 166,
+    "sentence": "Repair and service according to customer requirements .",
+    "has_skill": 1,
+    "spans": [
+      "Repair",
+      "service"
+    ]
+  },
+  {
+    "idx": 167,
+    "sentence": "Support to customers and general technical support .",
+    "has_skill": 1,
+    "spans": [
+      "technical support"
+    ]
+  },
+  {
+    "idx": 168,
+    "sentence": "Troubleshooting and adjustments to equipment and machines .",
+    "has_skill": 1,
+    "spans": [
+      "Troubleshooting",
+      "adjustments to equipment and machines"
+    ]
+  },
+  {
+    "idx": 169,
+    "sentence": "Start-up and commissioning of machinery and process plants on board vessels .",
+    "has_skill": 1,
+    "spans": [
+      "Start-up and commissioning"
+    ]
+  },
+  {
+    "idx": 170,
+    "sentence": "Training of the crew .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 171,
+    "sentence": "Optimization of plant and equipment .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 172,
+    "sentence": "You have hands-on experience with <ORGANIZATION> <ORGANIZATION> products ( decanters high-speed separators PureBilge FWG Pure Dry) .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 173,
+    "sentence": "You know the Marine Business and have sailing experience minimum as a 2 nd",
+    "has_skill": 1,
+    "spans": [
+      "Marine Business",
+      "sailing"
+    ]
+  },
+  {
+    "idx": 174,
+    "sentence": "You have a very good mechanical understanding .",
+    "has_skill": 1,
+    "spans": [
+      "mechanical understanding"
+    ]
+  },
+  {
+    "idx": 175,
+    "sentence": "You have good knowledge and experience in automation and control systems .",
+    "has_skill": 1,
+    "spans": [
+      "automation and control systems"
+    ]
+  },
+  {
+    "idx": 176,
+    "sentence": "You are proficient in Microsoft Office .",
+    "has_skill": 1,
+    "spans": [
+      "Microsoft Office"
+    ]
+  },
+  {
+    "idx": 177,
+    "sentence": "You speak and write Danish and English .",
+    "has_skill": 1,
+    "spans": [
+      "Danish",
+      "English"
+    ]
+  },
+  {
+    "idx": 179,
+    "sentence": "Our team is committed to extracting insights and value from data by applying domain expertise tools and technology and contemporary analytics .",
+    "has_skill": 1,
+    "spans": [
+      "domain expertise",
+      "tools and technology",
+      "contemporary analytics"
+    ]
+  },
+  {
+    "idx": 180,
+    "sentence": "Your key tasks will be to ensure data collection procedures for building analytic systems operationalise data mining and analysis into business applications maintain the productionised models .",
+    "has_skill": 1,
+    "spans": [
+      "data mining",
+      "analysis"
+    ]
+  },
+  {
+    "idx": 181,
+    "sentence": "Your competences include that you have solid experience from quantitative or data-heavy functions have solid programming experience in C# Python or Java have experience in open source data ingestion tools like NiFi have experience with popular cloud platforms and container technology tools have experience with analytics engines like Spark or Databricks",
+    "has_skill": 1,
+    "spans": [
+      "programming",
+      "C#",
+      "Python",
+      "Java",
+      "open source data ingestion tools",
+      "NiFi",
+      "cloud platforms",
+      "container technology tools",
+      "analytics engines",
+      "Spark",
+      "Databricks"
+    ]
+  },
+  {
+    "idx": 182,
+    "sentence": "Furthermore excellence in at least one of the following categories is highly desirable: data visualisation tools cloud platforms machine learning techniques and algorithms .",
+    "has_skill": 1,
+    "spans": [
+      "data visualisation tools",
+      "cloud platforms",
+      "machine learning techniques and algorithms"
+    ]
+  },
+  {
+    "idx": 183,
+    "sentence": "Finally a willingness to learn is essential .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 184,
+    "sentence": "Criminal record certificate Please note that for Danish applicants we may request a criminal record certificate in connection with this job and that employment will be subject to the information listed .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 185,
+    "sentence": "The criminal record certificate will only be used in the assessment if the criminal activity is of relevance to the position .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 186,
+    "sentence": "Some of the tasks you will be handling are: Registering and controlling goods Picking and packing Preparing pallets",
+    "has_skill": 1,
+    "spans": [
+      "Registering and controlling goods",
+      "Picking and packing",
+      "Preparing pallets"
+    ]
+  },
+  {
+    "idx": 187,
+    "sentence": "Loading and unloading lorries Operating a forklift",
+    "has_skill": 1,
+    "spans": [
+      "Loading and unloading lorries",
+      "Operating a forklift"
+    ]
+  },
+  {
+    "idx": 188,
+    "sentence": "To be considered for this position it is important that you: Have a forklift license Work independently and proactively Set high standards for your work Are a flexible and helpful colleague Focus on work environment",
+    "has_skill": 1,
+    "spans": [
+      "forklift license"
+    ]
+  },
+  {
+    "idx": 190,
+    "sentence": "This transition represents an exciting opportunity for us ( and for you as a PhD Student ) to reinvent our research strategies as well as our approaches to teaching and learning .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 191,
+    "sentence": "The PhD Student will be responsible for constructing a 'light sheet' fluorescence microscope for live-sample imaging of 3D printed organoids mimicking the intestinal barrier .",
+    "has_skill": 1,
+    "spans": [
+      "live-sample imaging"
+    ]
+  },
+  {
+    "idx": 192,
+    "sentence": "In close collaboration with biologists and image analysts at <ORGANIZATION> and internationally the PhD Student will use this microscope to pursue a deeper understanding of how biopharmaceuticals and other compounds pass from the intestinal lumen to the blood .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 193,
+    "sentence": "The PhD Student will play a central role in our mission to understand intestinal absorption at the molecular level and be responsible for implementing one of the Worlds most advanced optical microscopes for live-sample imaging - an effort which will require some initial training ( approx .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 194,
+    "sentence": "At <ORGANIZATION> the PhD Student will use the microscope together with local biologist and image analysts to capture how fluorescently labelled biopharmaceuticals travel through the intestinal barrier .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 195,
+    "sentence": "During this application-oriented phase of the project the PhD Student will be responsible for optimizing microscope hardware and software to provide the best images possible .",
+    "has_skill": 1,
+    "spans": [
+      "optimizing microscope hardware and software"
+    ]
+  },
+  {
+    "idx": 196,
+    "sentence": "The PhD Student's ability to drive hardware/software development will be essential .",
+    "has_skill": 1,
+    "spans": [
+      "hardware/software development"
+    ]
+  },
+  {
+    "idx": 197,
+    "sentence": "Likewise also have the ability to document present and publish scientific findings will be central .",
+    "has_skill": 1,
+    "spans": [
+      "document",
+      "publish scientific findings"
+    ]
+  },
+  {
+    "idx": 198,
+    "sentence": "Finally it is important that the PhD Student is motivated to contribute to the enjoyable and collaborative work environment in DTU's new Department of Health Technology which will host our research group and research centre starting January 1st 2019 .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 199,
+    "sentence": "Candidates should have a two-year master's degree ( 120 ECTS points ) or a similar degree with an academic level equivalent to a two-year master's degree .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 201,
+    "sentence": "Plan and execute complex hardware implementation i.e .",
+    "has_skill": 1,
+    "spans": [
+      "hardware implementation"
+    ]
+  },
+  {
+    "idx": 202,
+    "sentence": "interface optics electronics and software .",
+    "has_skill": 1,
+    "spans": [
+      "interface optics electronics",
+      "software"
+    ]
+  },
+  {
+    "idx": 203,
+    "sentence": "Work constructively in a team of diverse scientist i.e .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 204,
+    "sentence": "analyse and contribute to solve biological/mathematical challenges .",
+    "has_skill": 1,
+    "spans": [
+      "analyse",
+      "biological/mathematical challenges"
+    ]
+  },
+  {
+    "idx": 205,
+    "sentence": "Use software for instrument control e.g .",
+    "has_skill": 1,
+    "spans": [
+      "instrument control"
+    ]
+  },
+  {
+    "idx": 206,
+    "sentence": "LabVIEW .",
+    "has_skill": 1,
+    "spans": [
+      "LabVIEW"
+    ]
+  },
+  {
+    "idx": 207,
+    "sentence": "Use software for data simulation and basic image analysis e.g .",
+    "has_skill": 1,
+    "spans": [
+      "data simulation",
+      "basic image analysis"
+    ]
+  },
+  {
+    "idx": 208,
+    "sentence": "MATLAB .",
+    "has_skill": 1,
+    "spans": [
+      "MATLAB"
+    ]
+  },
+  {
+    "idx": 209,
+    "sentence": "Use software for basic mechanical design e.g .",
+    "has_skill": 1,
+    "spans": [
+      "mechanical design"
+    ]
+  },
+  {
+    "idx": 210,
+    "sentence": "SOLIDWORKS .",
+    "has_skill": 1,
+    "spans": [
+      "SOLIDWORKS"
+    ]
+  },
+  {
+    "idx": 211,
+    "sentence": "Communicate professionally and fluently in English ( also in writing) .",
+    "has_skill": 1,
+    "spans": [
+      "Communicate professionally and fluently in English"
+    ]
+  },
+  {
+    "idx": 212,
+    "sentence": "Present insights progress and bottlenecks to diverse ( non-expert ) audiences including: Local/international collaborators BSc/MSc students and the public .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 214,
+    "sentence": "Previous training with an emphasis on software/hardware development and some exposure to fundamental biology/physiology is preferable .",
+    "has_skill": 1,
+    "spans": [
+      "software/hardware development",
+      "fundamental biology/physiology"
+    ]
+  },
+  {
+    "idx": 215,
+    "sentence": "Grade transcripts and BSc/MSc diploma",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 216,
+    "sentence": "The main responsibilities of the advertised position are research and teaching in marketingin particular business researchand development tasks in relation to marketing courses and programs .",
+    "has_skill": 1,
+    "spans": [
+      "research",
+      "teaching",
+      "marketing",
+      "business research",
+      "development tasks",
+      "marketing courses and programs"
+    ]
+  },
+  {
+    "idx": 217,
+    "sentence": "An active engagement to strengthen the relationship with ( and to brand the Department and <ORGANIZATION> in ) business and society and to initiate and participate in external funding all is expected as an integral part of this position .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 218,
+    "sentence": "The successful candidate must have an international profile with experience from respected universities/business schools a sustained record of research publications in leading academic journals ( e.g. journals at minimum AJG [ previously known as ABS ] 3 level with at least some of these publications being in traditional marketing journals .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 219,
+    "sentence": "The successful candidate ideally has experience in research management as well as successful teaching experience from relevant marketing areas .",
+    "has_skill": 1,
+    "spans": [
+      "research management",
+      "teaching",
+      "marketing"
+    ]
+  },
+  {
+    "idx": 222,
+    "sentence": "We are particularly interested in research contributing to business research .",
+    "has_skill": 1,
+    "spans": [
+      "business research"
+    ]
+  },
+  {
+    "idx": 223,
+    "sentence": "Research management initiation of research projects supervision of Ph.D .",
+    "has_skill": 1,
+    "spans": [
+      "Research management",
+      "supervision of Ph.D ."
+    ]
+  },
+  {
+    "idx": 224,
+    "sentence": "students international research co-operation journal editorship and/or reviewing for academic journals .",
+    "has_skill": 1,
+    "spans": [
+      "journal editorship",
+      "reviewing for academic journals"
+    ]
+  },
+  {
+    "idx": 225,
+    "sentence": "Academic development of the marketing discipline .",
+    "has_skill": 1,
+    "spans": [
+      "marketing"
+    ]
+  },
+  {
+    "idx": 226,
+    "sentence": "Research-based teaching supervision and examination at all levels .",
+    "has_skill": 1,
+    "spans": [
+      "Research-based teaching supervision",
+      "examination"
+    ]
+  },
+  {
+    "idx": 227,
+    "sentence": "We are particularly interested in teaching on business research .",
+    "has_skill": 1,
+    "spans": [
+      "business research"
+    ]
+  },
+  {
+    "idx": 228,
+    "sentence": "Continuous course and program development as well as innovative new courses and programs .",
+    "has_skill": 1,
+    "spans": [
+      "course and program development"
+    ]
+  },
+  {
+    "idx": 229,
+    "sentence": "Participation in and possibly initiation of externally funded research projects and the co-ordination of such projects .",
+    "has_skill": 1,
+    "spans": [
+      "co-ordination"
+    ]
+  },
+  {
+    "idx": 231,
+    "sentence": "Dissemination of research findings to the public in general and to <ORGANIZATION> stakeholders in particular .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 232,
+    "sentence": "Active participation in the Departments regular research activities including seminars workshops and conferences .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 233,
+    "sentence": "Engagement in and contribution to academic citizenship activities .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 234,
+    "sentence": "To fulfill the requirements of this position the successful candidate is expected to be present physically at the Department on a regular basis and participate actively in the research and teaching activities of the Department as well as to maintain and establish broad links across <ORGANIZATION> and outside <ORGANIZATION> ( e.g. the business community and international academia) .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 235,
+    "sentence": "Qualifications The successful candidate must have an international profile with experience from respected universities/business schools a record of research that has been published in leading academic journals ( e.g. journals at minimum AJG [ previously known as ABS ] 3 level .",
+    "has_skill": 1,
+    "spans": [
+      "research"
+    ]
+  },
+  {
+    "idx": 236,
+    "sentence": "The successful candidate has substantial teaching experience and ideally in research management for example Ph.D .",
+    "has_skill": 1,
+    "spans": [
+      "teaching",
+      "research management"
+    ]
+  },
+  {
+    "idx": 237,
+    "sentence": "We are interested particularly in research and teaching in the areas of business research .",
+    "has_skill": 1,
+    "spans": [
+      "research",
+      "teaching"
+    ]
+  },
+  {
+    "idx": 238,
+    "sentence": "The ideal candidate successfully has achieved ( or is working on achieving ) research grants; and the candidate is respected in the marketing community .",
+    "has_skill": 1,
+    "spans": [
+      "research grants",
+      "marketing"
+    ]
+  },
+  {
+    "idx": 240,
+    "sentence": "The applicant must have professional proficiency in English ( written and spoken) .",
+    "has_skill": 1,
+    "spans": [
+      "English ( written and spoken)"
+    ]
+  },
+  {
+    "idx": 241,
+    "sentence": "Documentation of teaching qualifications teaching evaluations ( please state the level of each course) and other relevant material for the evaluation of the candidates pedagogical level .",
+    "has_skill": 1,
+    "spans": [
+      "teaching qualifications",
+      "teaching evaluations"
+    ]
+  },
+  {
+    "idx": 243,
+    "sentence": "Here you are furthermore required to: Know all information provided to you .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 245,
+    "sentence": "Show independent thinking Having a professonal approach as you are also representing the firm .",
+    "has_skill": 1,
+    "spans": [
+      "independent thinking",
+      "professonal approach"
+    ]
+  },
+  {
+    "idx": 246,
+    "sentence": "Strong leadership skills - YOU are in charge of the group you are taking out Support to our corporate events where you will be assiting with teambuilding excercises etc .",
+    "has_skill": 1,
+    "spans": [
+      "leadership",
+      "teambuilding"
+    ]
+  },
+  {
+    "idx": 247,
+    "sentence": "and leading a larger group",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 249,
+    "sentence": "Cleaning duties will be part of the job; you will need to ensure the shop is tidy and clean - dusting vacuuming etc; helmets sprayed; Segways washed .",
+    "has_skill": 1,
+    "spans": [
+      "dusting",
+      "vacuuming"
+    ]
+  },
+  {
+    "idx": 251,
+    "sentence": "Street-marketing",
+    "has_skill": 1,
+    "spans": [
+      "Street-marketing"
+    ]
+  },
+  {
+    "idx": 252,
+    "sentence": "Occassionally you will be required to take street-marketing shifts; this entails approaching people with a confident and engaging attitude trying to sell our tours",
+    "has_skill": 1,
+    "spans": [
+      "street-marketing"
+    ]
+  },
+  {
+    "idx": 253,
+    "sentence": "In order to apply for this job you have to be: Fluent in English .",
+    "has_skill": 1,
+    "spans": [
+      "English"
+    ]
+  },
+  {
+    "idx": 254,
+    "sentence": "Additional languages are definitely a big plus ( especially German) .",
+    "has_skill": 1,
+    "spans": [
+      "German"
+    ]
+  },
+  {
+    "idx": 256,
+    "sentence": "Outgoing with a lively & fun personality .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 257,
+    "sentence": "You have to be comfortable with public speaking and know how to engage an audience .",
+    "has_skill": 1,
+    "spans": [
+      "public speaking",
+      "engage an audience"
+    ]
+  },
+  {
+    "idx": 258,
+    "sentence": "Responsible & Dutiful .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 259,
+    "sentence": "It is important you have a mature approach to the job and can demonstrate leadership abilities .",
+    "has_skill": 1,
+    "spans": [
+      "leadership abilities"
+    ]
+  },
+  {
+    "idx": 260,
+    "sentence": "Service-minded .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 261,
+    "sentence": "It is important you pride yourself in providing a first-class experience as we have a high standard at our company .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 262,
+    "sentence": "A big part of their tour will be you and you should always want to perform at your best ability .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 263,
+    "sentence": "Locally based ( or nearby ) with a good knowledge of Copenhagen Minimum of a high-school diploma or equivalent .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 264,
+    "sentence": "Bachelor/post-graduate degree is a plus .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 266,
+    "sentence": "You have experience in the service-industry especially within tourism .",
+    "has_skill": 1,
+    "spans": [
+      "tourism"
+    ]
+  },
+  {
+    "idx": 267,
+    "sentence": "You have experience with social media marketing",
+    "has_skill": 1,
+    "spans": [
+      "social media marketing"
+    ]
+  },
+  {
+    "idx": 268,
+    "sentence": "You have sales experience",
+    "has_skill": 1,
+    "spans": [
+      "sales"
+    ]
+  },
+  {
+    "idx": 269,
+    "sentence": "You have prior knowledge to Segways",
+    "has_skill": 1,
+    "spans": [
+      "Segways"
+    ]
+  },
+  {
+    "idx": 270,
+    "sentence": "You have first-aid skills",
+    "has_skill": 1,
+    "spans": [
+      "first-aid"
+    ]
+  },
+  {
+    "idx": 271,
+    "sentence": "We run tours daily and in the high season you will most likely be working more than one tour per day so it is important you have a good stamina for repeat tours and a love for being outdoors .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 272,
+    "sentence": "If you bring solid Supply Chain experience from an international setting and you are looking for an opportunity to manage challenges and personal impact far beyond the average this is it .",
+    "has_skill": 1,
+    "spans": [
+      "Supply Chain"
+    ]
+  },
+  {
+    "idx": 273,
+    "sentence": "To make this come true we are taking our global supply chain set up to the next level and that is why we need you and all of your business acumen planning skills and good ideas .",
+    "has_skill": 1,
+    "spans": [
+      "business acumen",
+      "planning skills"
+    ]
+  },
+  {
+    "idx": 274,
+    "sentence": "Production Planning responsible in global set up As E2E Supply Network Manager you will be functionally responsible for a full 36 months planning horizon in close collaborating with the local site Tactical planners for the assigned Global Supply Network typically one of our production sites in <LOCATION> <LOCATION> <LOCATION> or <LOCATION> or our external CMOs .",
+    "has_skill": 1,
+    "spans": [
+      "Production Planning"
+    ]
+  },
+  {
+    "idx": 275,
+    "sentence": "Your focus is to ensure reliable supply by operating in a structured formal monthly Sales and Operations Planning Process to maximize product availability .",
+    "has_skill": 1,
+    "spans": [
+      "Sales and Operations Planning Process"
+    ]
+  },
+  {
+    "idx": 276,
+    "sentence": "You will closely align with our Brand Supply Manager and support our Brand Strategy via standardized global processes new SAP tools etc .",
+    "has_skill": 1,
+    "spans": [
+      "Brand Strategy",
+      "SAP tools"
+    ]
+  },
+  {
+    "idx": 277,
+    "sentence": "Optimize supply and inventory plans throughout the supply network Lead supply scenario analysis within the tactical horizon ( 3-36 months ) & strategic horizon ( 36 months 10 years ) Monitor supply and capacity performance across the network of technology assets assigned Coordinate supply and capacity bottleneck management Support the supply risk management process and respond to ad hoc requests The role is highly visible with a great number of contacts across functions and you will be part of various planning communities and project teams .",
+    "has_skill": 1,
+    "spans": [
+      "supply and inventory plans",
+      "supply scenario analysis",
+      "supply and capacity performance",
+      "supply and capacity bottleneck management",
+      "supply risk management"
+    ]
+  },
+  {
+    "idx": 278,
+    "sentence": "To succeed you must establish and develop a close collaboration with especially the site based planning function but also a range of key stake holders in the organization .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 279,
+    "sentence": "Solid planning experience from an international setting",
+    "has_skill": 1,
+    "spans": [
+      "planning"
+    ]
+  },
+  {
+    "idx": 280,
+    "sentence": "You hold a relevant Masters degree ( i.e .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 281,
+    "sentence": "Business Engineering or Supply Chain Management ) backed by at least 7 years supply chain experience from an international company where you have gained proven working experience with SAP APO .",
+    "has_skill": 1,
+    "spans": [
+      "Business Engineering",
+      "Supply Chain Management",
+      "SAP APO"
+    ]
+  },
+  {
+    "idx": 283,
+    "sentence": "As you will join a highly regulated business you will also need all of your overview and sense of detail .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 284,
+    "sentence": "Your international experience and open-minded approach enable you to establish collaborative relations to people across professional and cultural borders .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 286,
+    "sentence": "We are currently looking for candidates for a two-year post-doctoral position in advanced electron microscopy within environmental catalysis .",
+    "has_skill": 1,
+    "spans": [
+      "advanced electron microscopy",
+      "environmental catalysis"
+    ]
+  },
+  {
+    "idx": 287,
+    "sentence": "Your role will be to study nanomaterials for the selective catalytic reduction ( SCR ) of NOx that is harmful to ecosystems and human health .",
+    "has_skill": 1,
+    "spans": [
+      "nanomaterials",
+      "selective catalytic reduction ( SCR ) of NOx"
+    ]
+  },
+  {
+    "idx": 288,
+    "sentence": "Specifically you will undertake atomic-scale studies of the structure-sensitive dynamic and functional behavior of SCR catalysts by means of cutting-edge in situ transmission electron microscopy .",
+    "has_skill": 1,
+    "spans": [
+      "in situ transmission electron microscopy"
+    ]
+  },
+  {
+    "idx": 290,
+    "sentence": "Your responsibilities Experimental research related to our SCR catalysts .",
+    "has_skill": 1,
+    "spans": [
+      "Experimental research"
+    ]
+  },
+  {
+    "idx": 291,
+    "sentence": "Application of S/TEM and EELS for atomic-resolution and in situ studies .",
+    "has_skill": 1,
+    "spans": [
+      "S/TEM",
+      "EELS"
+    ]
+  },
+  {
+    "idx": 294,
+    "sentence": "You are committed and flexible have an innovative mind-set with lots of new ideas are ready to face new challenges and like to take responsibility possess excellent skills to execute and communicate complex research goals are enthusiastic about working at the frontier of catalysis sciences .",
+    "has_skill": 1,
+    "spans": [
+      "execute",
+      "communicate",
+      "catalysis sciences"
+    ]
+  },
+  {
+    "idx": 295,
+    "sentence": "Ideally you have a Ph.D .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 296,
+    "sentence": "in physics chemistry or a related field and have an outstanding foundation in high-resolution ( scanning ) transmission electron microscopy ( S/TEM ) of heterogeneous catalysts or other solid-state nanomaterials .",
+    "has_skill": 1,
+    "spans": [
+      "high-resolution ( scanning ) transmission electron microscopy ( S/TEM )"
+    ]
+  },
+  {
+    "idx": 297,
+    "sentence": "Passion for Audio Engineering",
+    "has_skill": 1,
+    "spans": [
+      "Audio Engineering"
+    ]
+  },
+  {
+    "idx": 298,
+    "sentence": "You will become part of our Audio Engineering team with expertise in acoustic design algorithm trimming and general sound quality evaluation .",
+    "has_skill": 1,
+    "spans": [
+      "Audio Engineering",
+      "acoustic design",
+      "algorithm trimming",
+      "general sound quality evaluation"
+    ]
+  },
+  {
+    "idx": 299,
+    "sentence": "You will be able to use your passion and creativity in your daily work mainly focused on the interface towards our DSP team .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 300,
+    "sentence": "Here you will work on new algorithm concepts being part of our expert team around directionality/beam-forming and finally do trimming and verification of various audio algorithms in projects with respect to the final sound quality target of the product .",
+    "has_skill": 1,
+    "spans": [
+      "directionality/beam-forming",
+      "trimming",
+      "verification"
+    ]
+  },
+  {
+    "idx": 301,
+    "sentence": "3 years ) and enthusiasm in working with audio engineering in the interface towards a DSP team .",
+    "has_skill": 1,
+    "spans": [
+      "audio engineering"
+    ]
+  },
+  {
+    "idx": 302,
+    "sentence": "You build your experience on a solid theoretical education preferably on MSc .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 303,
+    "sentence": "Besides that you are outgoing as person and great at getting things to move forward in an optimized way .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 306,
+    "sentence": "Your must-haves are: 3+ years of experience in audio engineering towards a DSP-team Experience in algorithm concepting directionality / beam-forming Experience in MATLAB and preferably Python Experienced in trimming of various audio algorithms ( noise reduction systems EQ compressors etc. ) It is an advantage if you also bring experience with: Objective and subjective sound quality evaluation Measurement systems for audio evaluation",
+    "has_skill": 1,
+    "spans": [
+      "audio engineering",
+      "algorithm concepting directionality / beam-forming",
+      "MATLAB",
+      "Python",
+      "Objective and subjective sound quality evaluation",
+      "Measurement systems for audio evaluation"
+    ]
+  },
+  {
+    "idx": 308,
+    "sentence": "Due to this we are looking for a <PROFESSION> <PROFESSION> to research the market and take initial contact to potential clients .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 309,
+    "sentence": "Tasks: Carry out market research of potential clients in <LOCATION> and possibly other countries Establish initial contact to potential clients in co-operation with the sales and technical department Translate sales material from English to Italian Requirements: Native speaking Italian and fluent in English Preferably experience with tele marketing or alternatively willingness to learn this and be proactive on the phone An independent positive and proactive person A basic understanding of Danish is a plus but not mandatory Preferably experience from working in a sales department or similar You will get a good internal training within our products and markets .",
+    "has_skill": 1,
+    "spans": [
+      "market research",
+      "tele marketing"
+    ]
+  },
+  {
+    "idx": 310,
+    "sentence": "The Architect will be leading technology strategy roadmaps and transformation plans including communication and integration to strategic projects within IT and our business .",
+    "has_skill": 1,
+    "spans": [
+      "technology strategy roadmaps",
+      "transformation plans",
+      "communication",
+      "integration"
+    ]
+  },
+  {
+    "idx": 311,
+    "sentence": "We are looking for a candidate that would be motivated by taking a key role in the digitalization at <ORGANIZATION> <ORGANIZATION> <ORGANIZATION> <ORGANIZATION> with leadership in Teamcenter our PLM/PDM Manufacturing Execution and product quality systems ( QSYS ) and integration to global ERP ( SAP ) Platforms for Product and process related information.We are working in a truly global environment and you will be collaborating with a broad diversity of cultures globally .",
+    "has_skill": 1,
+    "spans": [
+      "Teamcenter",
+      "PLM/PDM",
+      "Manufacturing Execution",
+      "product quality systems",
+      "ERP"
+    ]
+  },
+  {
+    "idx": 312,
+    "sentence": "The team is very dynamic and we have a high pace in our normal work days .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 313,
+    "sentence": "The employees are expected to have a high personal motivation drive and capability to approach complex tasks with an open mind and focus on providing the best solution for <ORGANIZATION> <ORGANIZATION> in a very structured and analytic manner .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 314,
+    "sentence": "About the role Lead the technology roadmap for Teamcenter QSYS and interfaced enterprise systems Participate actively in strategic projects ongoing in the Digitalization domain .",
+    "has_skill": 1,
+    "spans": [
+      "technology roadmap",
+      "Teamcenter QSYS",
+      "Digitalization"
+    ]
+  },
+  {
+    "idx": 315,
+    "sentence": "Be the main interface between PLM data and systems governance organizations across <ORGANIZATION> and the PLM technology roadmap .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 316,
+    "sentence": "Lead and coach a team of internal and external solution architect in the PLM department .",
+    "has_skill": 1,
+    "spans": [
+      "solution architect"
+    ]
+  },
+  {
+    "idx": 317,
+    "sentence": "Model and control enterprise PLM architecture ( data and systems ) as pr .",
+    "has_skill": 1,
+    "spans": [
+      "Model and control enterprise PLM architecture"
+    ]
+  },
+  {
+    "idx": 319,
+    "sentence": "About you You have most likely worked in large enterprises being part of large scale system implementaions a a lead consultant You have had an exposure to Teamcenter or any other PLM enterprise system and understands how systems interact with ERP and manufacturing execution systems .",
+    "has_skill": 1,
+    "spans": [
+      "system implementaions",
+      "lead consultant",
+      "Teamcenter",
+      "PLM enterprise system",
+      "ERP",
+      "manufacturing execution systems"
+    ]
+  },
+  {
+    "idx": 321,
+    "sentence": "You are able to communicate on all levels of the organization and with many stakeholders within IT and Business You are an excellent and persuasive communicator and fluent in both spoken and written English Other information Apply online in English for the job at <CONTACT> Please note that we will reply by email .",
+    "has_skill": 1,
+    "spans": [
+      "communicate",
+      "communicator",
+      "English"
+    ]
+  },
+  {
+    "idx": 322,
+    "sentence": "Job description The position includes teaching and research in basic and applied nutrition of ruminants with special focus on dairy cattle .",
+    "has_skill": 1,
+    "spans": [
+      "teaching",
+      "research"
+    ]
+  },
+  {
+    "idx": 324,
+    "sentence": "The subject area includes feed evaluation digestive processes intermediary metabolism and impact of nutrition and feeding management of productivity and animal health and product quality .",
+    "has_skill": 1,
+    "spans": [
+      "feed evaluation",
+      "digestive processes",
+      "intermediary metabolism",
+      "feeding management"
+    ]
+  },
+  {
+    "idx": 325,
+    "sentence": "The Tenure Track Assistant Professors duties will primarily consist of: research including publication/academic dissemination duties research-based teaching with associated examination duties sharing knowledge with society participation in formal pedagogical training program for Assistant Professors The Tenure Track Assistant Professors performance will be evaluated through annual evaluations .",
+    "has_skill": 1,
+    "spans": [
+      "research",
+      "publication/academic dissemination",
+      "research-based teaching",
+      "sharing knowledge with society"
+    ]
+  },
+  {
+    "idx": 326,
+    "sentence": "Required qualifications a PhD degree or similar qualifications in relation to the above subject area research and teaching experience within the field of the position The Assistant Professor is also required to be enterprising and to possess good interpersonal skills .",
+    "has_skill": 1,
+    "spans": [
+      "research",
+      "teaching",
+      "interpersonal skills"
+    ]
+  }
+]
