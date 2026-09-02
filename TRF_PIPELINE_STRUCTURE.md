@@ -893,3 +893,24 @@ $python = (Get-Command python).Source
 ## 16. 一句话总结
 
 当前 TRF 的核心是：先从自我标注结果构建 192 正类和 88 负类 demonstration，通过全局统计得到 20 个 Skill 候选词，再用固定 BERT 为每条正类选择 5 个伪 TRF；对于目标句，使用 Qwen Embedding 检索 16 条可靠示例，最后让 Qwen 在同一两轮会话中先判断 Skill 类型，再开放生成目标 TRF，并把所有冲突、来源和 SHA256 完整保存用于审计。
+
+## 17. 目标 TRF 后的实例判别器
+
+新增的 `code/instance_discriminator/` 是目标 TRF 的单向下游，不修改本文件前述两类 TRF
+run，也不接入 `RunFullTRF.py`：
+
+```text
+target parsed record + target retrieval.selected[16]
+  → join self-annotation decisions（只补 demonstration 跨度）
+  → 一次 Qwen structured-JSON helpfulness 判别
+  → 分数至少 4、角色非 irrelevant 的程序化 hard gate
+  → 0～8 条 selected demonstrations
+```
+
+来源由 `--target-trf-run-id` 指定。runner 会从已完成目标 run 的 manifest 和
+source snapshot 自动锁定 `retrieval/records.jsonl`、`parsed/records.jsonl` 与上游
+`selected/decisions.jsonl` 的路径和 SHA256。排序使用分数、existence score、目标检索阶段
+已经保存的 10 位 similarity、demo idx，不尝试恢复未保存的原始浮点数。
+
+该阶段的设计、状态原因、目录合同和命令见 `INSTANCE_DISCRIMINATOR_DESIGN.md`；当前只报告
+门控和审计指标，不把 leave-one-out 伪标签当作人工 Gold，也不宣称准确率提升。

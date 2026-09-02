@@ -130,6 +130,50 @@ TRF 输出目录。`config/trf.json` 仅保存 `output/runs` 根路径，不再�
 在人工检查前固定为 `pending_manual_review`；leave-one-out 指标只是伪标签一致性，不是
 Gold 准确率。
 
+## 实例判别器
+
+实例判别器位于目标 TRF 之后。它复用目标 run 已保存的 16 条候选，不重新检索；同时从
+目标 run 的 source snapshot 自动锁定上游 `selected/decisions.jsonl`，为 accepted 示例补充
+技能跨度，negative 示例保持空跨度和空伪 TRF。目标 prompt 只包含目标句、目标类型和目标
+TRF，不读取目标自身的 self-annotation 状态或跨度。
+
+先离线准备全部 candidates 和 prompts：
+
+```powershell
+.\scripts\run-instance-discriminator.ps1 `
+  -TargetTRFRunId trf_0831-target `
+  -RunId <new-run-id> `
+  -PrepareOnly `
+  -PythonExecutable $python
+
+& $python .\code\instance_discriminator\ValidateInstanceDiscriminatorRun.py `
+  --run-id <new-run-id>
+```
+
+未来允许网络后，可恢复同一未完成 run。成功目标不会重调；失败目标只有增加
+`-RetryFailed` 才会重新请求：
+
+```powershell
+.\scripts\run-instance-discriminator.ps1 `
+  -TargetTRFRunId trf_0831-target `
+  -RunId <run-id> `
+  -Resume `
+  -AllowNetwork `
+  -ConfirmFullRun `
+  -PythonExecutable $python
+```
+
+Qwen 必须一次返回恰好 16 项结构化判断。程序只保留 helpfulness 4～5 分且角色为
+`supporting` 或 `contrastive` 的示例；按分数、existence score、上游已经保存的 10 位
+similarity、demo idx 排序，最多 8 条，其中 supporting 最多 6 条、contrastive 最多 3 条。
+不会为了凑数回填低分项。少于 2 条、上游目标 TRF 已需复核、或类型为 Skill 但目标 TRF
+为空时，正式记录标为 `needs_review`。
+
+运行产物保存在 `output/instance_discriminator_runs/<run-id>/`，包括锁定来源、candidates、
+prompts、append-only raw response、parsed judgments、selected records、summary、人工审计样本
+和 manifest。v1 只实现 `目标 TRF → 实例判别器` 的单向协作，不接入完整 TRF 父流水线，
+也不宣称技能抽取准确率提升。完整合同见 `INSTANCE_DISCRIMINATOR_DESIGN.md`。
+
 ## 一键重跑完整 TRF
 
 `rerun-all-trf.ps1` 会按顺序执行：离线 corpus → 全局候选 → BERT Top-5 → 目标

@@ -66,6 +66,8 @@ htmlcov/
 !/output/trf_target_runs/.gitkeep
 /output/trf_full_runs/*
 !/output/trf_full_runs/.gitkeep
+/output/instance_discriminator_runs/*
+!/output/instance_discriminator_runs/.gitkeep
 
 # Local scratch notes
 /333.md
