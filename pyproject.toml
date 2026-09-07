@@ -1,7 +1,7 @@
 [project]
 name = "skill-sentence-processor"
-version = "0.6.0"
-description = "Inline skill-span self-annotation with span XMLC consensus"
+version = "0.7.0"
+description = "Peer self-annotation, TRF, and instance-discrimination modules"
 requires-python = ">=3.10,<3.11"
 dependencies = [
   "openai>=2,<3",

@@ -55,19 +55,13 @@ htmlcov/
 /models/
 /huggingface/
 
-# Generated pipeline outputs; retain empty directory placeholders
-/output/prompts/*
-!/output/prompts/.gitkeep
-/output/runs/*
-!/output/runs/.gitkeep
-/output/trf_runs/*
-!/output/trf_runs/.gitkeep
-/output/trf_target_runs/*
-!/output/trf_target_runs/.gitkeep
-/output/trf_full_runs/*
-!/output/trf_full_runs/.gitkeep
-/output/instance_discriminator_runs/*
-!/output/instance_discriminator_runs/.gitkeep
+# Generated outputs for the three peer modules
+/output/self_annotator/*
+!/output/self_annotator/.gitkeep
+/output/trf/*
+!/output/trf/.gitkeep
+/output/instance_discriminator/*
+!/output/instance_discriminator/.gitkeep
 
 # Local scratch notes
 /333.md

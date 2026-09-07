@@ -1,7 +1,0 @@
-{
-  "version": "skill-inline-annotation-v4.1",
-  "input": "data/raw/skill_sentences.json",
-  "output": "output/prompts/prompts.json",
-  "preview_output": "output/prompts/preview.json",
-  "prompt_file": "code/self_consistent_annotation/prompt_template/skill_annotation.txt"
-}

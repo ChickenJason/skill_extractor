@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import platform
+import json
 import sys
 from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError, version
@@ -24,6 +25,12 @@ from common.io_utils import (  # noqa: E402
     sha256_json,
     utc_now,
     validate_run_id,
+)
+from common.contracts import (  # noqa: E402
+    file_snapshot,
+    record_identity,
+    record_source_sha256,
+    validate_unique_identities,
 )
 
 
@@ -47,13 +54,13 @@ def load_discriminator_config(path: Path) -> dict[str, Any]:
     config = load_json(path)
     if config.get("schema_version") != 1:
         raise InstanceDiscriminatorError("config schema_version must equal 1")
+    if config.get("module") != "instance_discriminator":
+        raise InstanceDiscriminatorError("config module must equal instance_discriminator")
     if config.get("pipeline_version") != "instance-discriminator-v1":
         raise InstanceDiscriminatorError("Unsupported discriminator pipeline_version")
-    source = config.get("source", {})
+    source = config.get("inputs", {})
     if source.get("candidate_count") != 16:
         raise InstanceDiscriminatorError("The candidate contract must remain fixed at 16")
-    if not isinstance(source.get("target_runs_root"), str):
-        raise InstanceDiscriminatorError("source.target_runs_root must be a path")
     chat = config.get("chat", {})
     if (
         chat.get("model") != "qwen3.7-plus-2026-05-26"
@@ -102,132 +109,138 @@ def discriminator_run_paths(
     )
 
 
-def target_run_root(config: dict[str, Any], target_run_id: str) -> Path:
-    return (
-        resolve_project_path(PROJECT_ROOT, config["source"]["target_runs_root"])
-        / validate_run_id(target_run_id)
-    ).resolve()
+def _load_records(path: Path) -> list[dict[str, Any]]:
+    if path.suffix.lower() == ".jsonl":
+        return read_jsonl(path)
+    value = load_json(path)
+    if isinstance(value, dict):
+        value = value.get("records")
+    if not isinstance(value, list) or not all(isinstance(item, dict) for item in value):
+        raise InstanceDiscriminatorError(f"Expected a JSON/JSONL record collection: {path}")
+    return value
 
 
-def _ledger_hash(manifest: dict[str, Any], relative: str) -> str:
-    item = manifest.get("outputs", {}).get(relative)
-    if not isinstance(item, dict) or not isinstance(item.get("sha256"), str):
-        raise InstanceDiscriminatorError(
-            f"Target TRF manifest does not lock output {relative}"
-        )
-    return item["sha256"]
+def _resolved_input(value: str | Path) -> Path:
+    return resolve_project_path(PROJECT_ROOT, value).resolve()
 
 
-def snapshot_sources(config: dict[str, Any], target_run_id: str) -> dict[str, Any]:
-    root = target_run_root(config, target_run_id)
+def snapshot_sources(
+    targets_path: str | Path,
+    candidates_path: str | Path,
+    features_path: str | Path | None,
+) -> dict[str, Any]:
     paths = {
-        "manifest": root / "manifest.json",
-        "source_snapshot": root / "source_snapshot.json",
-        "retrieval": root / "retrieval" / "records.jsonl",
-        "parsed": root / "parsed" / "records.jsonl",
+        "targets": _resolved_input(targets_path),
+        "candidates": _resolved_input(candidates_path),
     }
-    for path in paths.values():
-        if not path.is_file():
-            raise InstanceDiscriminatorError(f"Required target TRF artifact is missing: {path}")
-    manifest = load_json(paths["manifest"])
-    if manifest.get("run_id") != target_run_id:
-        raise InstanceDiscriminatorError("Target TRF manifest run_id mismatch")
-    if manifest.get("status") != "completed" or manifest.get("source_unchanged") is not True:
-        raise InstanceDiscriminatorError("Target TRF run is not safely completed")
-    for name, relative in {
-        "source_snapshot": "source_snapshot.json",
-        "retrieval": "retrieval/records.jsonl",
-        "parsed": "parsed/records.jsonl",
-    }.items():
-        expected = _ledger_hash(manifest, relative)
-        actual = sha256_file(paths[name])
-        if actual != expected:
-            raise InstanceDiscriminatorError(
-                f"Target TRF output hash mismatch for {relative}: expected {expected}, got {actual}"
-            )
-    target_source = load_json(paths["source_snapshot"])
-    decision_item = target_source.get("files", {}).get("decisions")
-    if not isinstance(decision_item, dict):
-        raise InstanceDiscriminatorError("Target source snapshot has no decisions artifact")
-    decision_path = Path(decision_item.get("path", "")).resolve()
-    if not decision_path.is_file():
-        raise InstanceDiscriminatorError(f"Source decisions are missing: {decision_path}")
-    decision_hash = sha256_file(decision_path)
-    if decision_hash != decision_item.get("sha256"):
-        raise InstanceDiscriminatorError("Source decisions hash mismatch")
-    compatibility_decision = (
-        manifest.get("compatibility", {})
-        .get("source", {})
-        .get("files", {})
-        .get("decisions")
-    )
-    if compatibility_decision != decision_item:
-        raise InstanceDiscriminatorError(
-            "Target manifest and target source snapshot disagree on decisions"
-        )
-    all_paths = {**paths, "decisions": decision_path}
+    if features_path is not None:
+        paths["features"] = _resolved_input(features_path)
     return {
-        "target_trf_run_id": target_run_id,
+        "feature_context": "present" if features_path is not None else "absent",
+        "files": {name: file_snapshot(path) for name, path in paths.items()},
+    }
+
+
+def assert_sources_unchanged(expected: dict[str, Any]) -> None:
+    files = expected.get("files", {})
+    current = {
+        "feature_context": expected.get("feature_context"),
         "files": {
-            name: {
-                "path": str(path),
-                "sha256": sha256_file(path),
-                "bytes": path.stat().st_size,
-            }
-            for name, path in all_paths.items()
+            name: file_snapshot(Path(details["path"]))
+            for name, details in files.items()
         },
     }
-
-
-def assert_sources_unchanged(
-    config: dict[str, Any], target_run_id: str, expected: dict[str, Any]
-) -> None:
-    if snapshot_sources(config, target_run_id) != expected:
+    if current != expected:
         raise InstanceDiscriminatorError("Locked source artifacts changed during the run")
 
 
-def _unique_by_idx(records: list[dict[str, Any]], label: str) -> dict[int, dict[str, Any]]:
-    result: dict[int, dict[str, Any]] = {}
-    for record in records:
+def _normalize_targets(records: list[dict[str, Any]], source_hash: str) -> list[dict[str, Any]]:
+    dataset_id = f"sentence-dataset-{source_hash[:16]}"
+    normalized: list[dict[str, Any]] = []
+    seen_indexes: set[int] = set()
+    for position, record in enumerate(records):
         idx = record.get("idx")
-        if not isinstance(idx, int) or isinstance(idx, bool) or idx in result:
-            raise InstanceDiscriminatorError(f"{label} has an invalid or duplicate idx")
-        result[idx] = record
-    return result
+        sentence = record.get("sentence")
+        if not isinstance(idx, int) or isinstance(idx, bool):
+            raise InstanceDiscriminatorError(f"targets[{position}].idx must be an integer")
+        if idx in seen_indexes:
+            raise InstanceDiscriminatorError("Target idx values must be unique within a run")
+        seen_indexes.add(idx)
+        if not isinstance(sentence, str) or not sentence.strip():
+            raise InstanceDiscriminatorError(f"targets[{position}].sentence is invalid")
+        normalized_record = {
+            "schema_version": record.get("schema_version", "sentence-record-v1"),
+            "dataset_id": record.get("dataset_id", dataset_id),
+            "record_id": record.get("record_id", str(idx)),
+            "source_sha256": record.get("source_sha256", source_hash),
+            **record,
+        }
+        if not isinstance(normalized_record["schema_version"], str):
+            raise InstanceDiscriminatorError(
+                f"targets[{position}].schema_version must be a string"
+            )
+        record_source_sha256(normalized_record, f"targets[{position}]")
+        normalized.append(normalized_record)
+    validate_unique_identities(normalized, "targets")
+    return normalized
+
+
+def _by_identity(
+    records: list[dict[str, Any]], label: str
+) -> dict[tuple[str, str], dict[str, Any]]:
+    validate_unique_identities(records, label)
+    for position, record in enumerate(records):
+        if not isinstance(record.get("schema_version"), str):
+            raise InstanceDiscriminatorError(
+                f"{label}[{position}].schema_version must be a string"
+            )
+        record_source_sha256(record, f"{label}[{position}]")
+    return {record_identity(record, label): record for record in records}
 
 
 def load_source_bundle(
-    config: dict[str, Any], target_run_id: str, limit: int | None = None
+    targets_path: str | Path,
+    candidates_path: str | Path,
+    features_path: str | Path | None = None,
+    limit: int | None = None,
 ) -> dict[str, Any]:
     if limit is not None and limit <= 0:
         raise InstanceDiscriminatorError("--limit must be positive")
-    snapshot = snapshot_sources(config, target_run_id)
-    files = snapshot["files"]
-    parsed = read_jsonl(Path(files["parsed"]["path"]))
-    retrieval = read_jsonl(Path(files["retrieval"]["path"]))
-    decisions = read_jsonl(Path(files["decisions"]["path"]))
-    parsed_by_idx = _unique_by_idx(parsed, "target parsed records")
-    retrieval_by_idx = _unique_by_idx(retrieval, "target retrieval records")
-    decisions_by_idx = _unique_by_idx(decisions, "source decisions")
-    if set(parsed_by_idx) != set(retrieval_by_idx):
-        raise InstanceDiscriminatorError("Target parsed and retrieval indexes do not match")
-    manifest = load_json(Path(files["manifest"]["path"]))
-    expected_indexes = manifest.get("compatibility", {}).get("targets", {}).get("indexes")
-    if expected_indexes != [item["idx"] for item in parsed]:
-        raise InstanceDiscriminatorError("Target records do not match manifest indexes")
-    for item in parsed:
-        idx = item["idx"]
-        if retrieval_by_idx[idx].get("sentence") != item.get("sentence"):
+    snapshot = snapshot_sources(targets_path, candidates_path, features_path)
+    target_file = Path(snapshot["files"]["targets"]["path"])
+    targets = _normalize_targets(
+        _load_records(target_file), snapshot["files"]["targets"]["sha256"]
+    )
+    candidates = _load_records(Path(snapshot["files"]["candidates"]["path"]))
+    candidates_by_identity = _by_identity(candidates, "candidates")
+    features_by_identity: dict[tuple[str, str], dict[str, Any]] = {}
+    if features_path is not None:
+        features = _load_records(Path(snapshot["files"]["features"]["path"]))
+        features_by_identity = _by_identity(features, "features")
+    selected_targets = targets[:limit] if limit is not None else targets
+    for target in selected_targets:
+        identity = record_identity(target, "target")
+        candidate = candidates_by_identity.get(identity)
+        if candidate is None:
             raise InstanceDiscriminatorError(
-                f"Target parsed/retrieval sentence mismatch for idx={idx}"
+                f"No candidate record for target identity {identity!r}"
             )
-    targets = parsed[:limit] if limit is not None else parsed
+        if candidate.get("sentence") != target["sentence"]:
+            raise InstanceDiscriminatorError(
+                f"Target/candidate sentence mismatch for {identity!r}"
+            )
+        if features_path is not None:
+            feature = features_by_identity.get(identity)
+            if feature is None or feature.get("sentence") != target["sentence"]:
+                raise InstanceDiscriminatorError(
+                    f"Missing or mismatched feature record for {identity!r}"
+                )
     return {
         "snapshot": snapshot,
-        "target_manifest": manifest,
-        "targets": targets,
-        "retrieval_by_idx": retrieval_by_idx,
-        "decisions_by_idx": decisions_by_idx,
+        "targets": selected_targets,
+        "candidates_by_identity": candidates_by_identity,
+        "features_by_identity": features_by_identity,
+        "feature_context": "present" if features_path is not None else "absent",
     }
 
 
@@ -236,7 +249,7 @@ def implementation_hashes() -> dict[str, dict[str, Any]]:
     paths.extend(
         [
             PROJECT_ROOT / "code" / "common" / "qwen_client.py",
-            PROJECT_ROOT / "scripts" / "run-instance-discriminator.ps1",
+            PROJECT_ROOT / "scripts" / "instance_discriminator" / "run.ps1",
             PROJECT_ROOT / "environment.yml",
             PROJECT_ROOT / "pyproject.toml",
         ]
@@ -267,6 +280,7 @@ def target_descriptor(records: list[dict[str, Any]], limit: int | None) -> dict[
     return {
         "record_count": len(records),
         "indexes": [item["idx"] for item in records],
+        "identities": [list(record_identity(item, "target")) for item in records],
         "records_sha256": sha256_json(records),
         "limit": limit,
     }
@@ -275,7 +289,7 @@ def target_descriptor(records: list[dict[str, Any]], limit: int | None) -> dict[
 def initialize_or_resume_run(
     config_path: Path,
     config: dict[str, Any],
-    target_run_id: str,
+    source: dict[str, Any],
     run_id: str,
     descriptor: dict[str, Any],
     command: list[str],
@@ -283,7 +297,6 @@ def initialize_or_resume_run(
     resume: bool,
 ) -> DiscriminatorRunPaths:
     paths = discriminator_run_paths(config, run_id)
-    source = snapshot_sources(config, target_run_id)
     compatibility = {
         "pipeline_version": config["pipeline_version"],
         "config_sha256": sha256_file(config_path),

@@ -1,277 +1,124 @@
-# SkillSentence Processor v0.6.0
+# Skill Sentence Processor
 
-本项目从招聘语句中提取原文技能片段。Qwen 仍使用原提示词，以 `<skill>...</skill>`
-做内联标记；活动聚合链路已经改为字符跨度级 XMLC，不再使用 Token/BIO，也不再追加
-自适应采样。
+本项目包含三个并列的业务模块。它们共享 `code/common/` 中的 I/O、哈希、Qwen 客户端和数据合同，但业务包之间不互相 import，也没有固定的跨模块执行顺序。
 
-```text
-固定五次采样
-→ Has-skill 三票多数门控
-→ Exact-span 三票接受
-→ Residual overlap-family
-→ 最高频span锚点覆盖硬匹配
-→ accepted / unsolved / negative / abstained
-```
+| 模块 | 主要职责 | 配置 | 正式入口 | 输出根目录 |
+|---|---|---|---|---|
+| `self_annotator` | 对句子进行五次独立自我标注，解析 Skill 字符跨度并聚合共识 | `config/self_annotator.json` | `scripts/self_annotator/run.ps1` | `output/self_annotator/<run-id>/` |
+| `trf` | 构建离线 TRF、为目标句检索候选实例并提取开放 TRF | `config/trf.json` | `scripts/trf/run.ps1` | `output/trf/<run-id>/` |
+| `instance_discriminator` | 对显式传入的候选实例逐个评分、分配角色并执行确定性硬门控 | `config/instance_discriminator.json` | `scripts/instance_discriminator/run.ps1` | `output/instance_discriminator/<run-id>/` |
 
-自我标注器不生成标准化技能名称或 taxonomy。正式 span 输出仍使用原文字符串跨度，
-偏移、票数和聚合证据保存在 decisions 与 audit 文件中。独立的 TRF 离线流水线会使用
-固定 BERT 生成论文式伪 TRF，但不会修改自我标注结果。
+三个模块的详细说明分别位于：
 
-## 目录
-
-```text
-code/       核心 Python 流程
-config/     Prompt 与固定五采样配置
-data/raw/   326 条原始语句
-output/     Prompt 和按 run-id 隔离的运行结果
-scripts/    PowerShell 入口
-tests/      离线测试
-research/   实验计划、运行日志与结果
-archive/    历史运行产物，只读保留
-```
+- [自我标注器](code/self_annotator/README.md)
+- [TRF](code/trf/README.md)
+- [实例判别器](code/instance_discriminator/README.md)
 
 ## 环境
 
+项目固定使用 Python 3.10。推荐使用已有环境：
+
 ```powershell
-Set-Location E:\research\extractor\SkillSentence-Processor-0822
-conda activate extractor
-$python = (Get-Command python).Source
+cd E:\research\extractor\SkillSentence-Processor-0822
+$python = ".\.venv-trf\Scripts\python.exe"
+& $python --version
 ```
 
-真实调用前设置阿里云 Model Studio 凭据：
+需要调用 Qwen 时设置：
 
 ```powershell
-$env:DASHSCOPE_API_KEY = "<API Key>"
-$env:DASHSCOPE_BASE_URL = "https://<WorkspaceId>.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
+$env:DASHSCOPE_API_KEY = "你的密钥"
+$env:DASHSCOPE_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 ```
 
-## 运行
+## 100 条目标句
+
+`data/raw/synthetic_jd_sentences_100.json` 是待识别的 100 条目标句，不替换已经固化的 326 条 demonstration。
+
+对这 100 条句子运行自我标注：
 
 ```powershell
-# Prompt 校验与全部离线测试
+.\scripts\self_annotator\run.ps1 `
+  -RunId synthetic100-self-v1 `
+  -Input .\data\raw\synthetic_jd_sentences_100.json `
+  -PythonExecutable .\.venv-trf\Scripts\python.exe
+```
+
+独立运行完整 TRF 模式：
+
+```powershell
+.\scripts\trf\run.ps1 `
+  -Mode Full `
+  -RunId synthetic100-trf-v1 `
+  -TargetMode independent `
+  -Input .\data\raw\synthetic_jd_sentences_100.json `
+  -AllowNetwork `
+  -ConfirmFullRun `
+  -PythonExecutable .\.venv-trf\Scripts\python.exe
+```
+
+TRF 可额外接收中立反馈文件；当前版本只校验并锁定它，不让反馈改变算法：
+
+```powershell
+.\scripts\trf\run.ps1 `
+  -Mode Full `
+  -RunId synthetic100-trf-feedback-v1 `
+  -TargetMode independent `
+  -Input .\data\raw\synthetic_jd_sentences_100.json `
+  -Feedback .\path\to\feedback.jsonl `
+  -AllowNetwork `
+  -ConfirmFullRun `
+  -PythonExecutable .\.venv-trf\Scripts\python.exe
+```
+
+实例判别器不推断上游目录。显式传入 targets、candidates，并按需传入 features：
+
+```powershell
+.\scripts\instance_discriminator\run.ps1 `
+  -RunId synthetic100-disc-v1 `
+  -Targets .\output\trf\synthetic100-trf-v1\target\targets\records.jsonl `
+  -Candidates .\output\trf\synthetic100-trf-v1\target\retrieval\records.jsonl `
+  -Features .\output\trf\synthetic100-trf-v1\target\parsed\records.jsonl `
+  -AllowNetwork `
+  -ConfirmFullRun `
+  -PythonExecutable .\.venv-trf\Scripts\python.exe
+```
+
+若不传 `-Features`，判别器只使用目标文本以及候选实例中的文本、跨度和可靠度信息；manifest 会记录 `feature_context: absent`，不会伪造 TRF。
+
+## 中立数据合同
+
+可交换记录携带以下字段：
+
+- `schema_version`：记录类型和版本；
+- `dataset_id`、`record_id`：跨数据集主键；
+- `source_sha256`：该记录的来源哈希；
+- `idx`：只用于稳定排序和兼容旧数据。
+
+leave-one-out 和泄漏检查使用 `(dataset_id, record_id)`。完整输入文件及输出文件的 SHA256 由各次运行的 `manifest.json` 锁定。
+
+正式 demonstration 位于 `data/processed/demonstrations/v1/`，共 326 条：225 accepted、88 negative、13 unsolved、0 abstained；其 manifest 同时锁定 `records.jsonl` 和 `audit.jsonl`。
+
+## 输出与恢复
+
+运行目录不可覆盖。中断或可恢复失败后，应使用同一个 run-id 并添加 `-Resume`；仅重试失败的在线记录时再添加 `-RetryFailed`。已经 completed 的运行保持不可变，需要重跑时使用新的 run-id。
+
+每个模块都提供只读 validator。常用命令见对应模块 README。
+
+## 离线验证
+
+```powershell
 .\scripts\run-tests.ps1
-
-# 生成完整 Prompt；-Limit 3 时写入 preview.json
-.\scripts\run-prompts.ps1
-.\scripts\run-prompts.ps1 -Limit 3
-
-# 固定五次采样，然后 Parse → Span XMLC → Select
-.\scripts\run-base.ps1 -RunId <run-id>
-
-# 测试、Prompt 与固定五采样流水线
-.\scripts\run-pipeline.ps1 -RunId <run-id>
-
-# 从历史基础响应重聚合；不读取补采样响应，也不访问网络
-.\scripts\run-reaggregate.ps1 `
-  -SourceRunRoot .\archive\self-annotation-history\inline-v4-2-full-20260821-001 `
-  -RunId span-xmlc-base5-replay-majority3-anchor-v1 `
-  -PythonExecutable $python
 ```
 
-真实采样入口中断后可用相同 run-id 增加 `-Resume`。离线重聚合要求目标目录为空，
-避免覆盖已有结果。
-
-## TRF 离线流水线
-
-TRF 三阶段通过 `SelfAnnotatorRunId` 读取 `output/runs/<SelfAnnotatorRunId>`：构建313条正式语料、提取
-20 个全局候选及 20 个 context-only 候选，并为 225 条正类分配两组 BERT Top-5；
-88 条负类的两组 TRF 均为空。
-
-输入与输出 ID 严格分离：`SelfAnnotatorRunId` 只选择自我标注输入；`RunId` 只命名
-TRF 输出目录。`config/trf.json` 仅保存 `output/runs` 根路径，不再写死任何自我标注 run-id。
-
-首次缓存固定 revision 的 `bert-base-cased` 时显式允许下载：
+等价的 unittest 命令：
 
 ```powershell
-.\scripts\run-trf-offline.ps1 `
-  -SelfAnnotatorRunId <自我标注-run-id> `
-  -RunId <新的-run-id> `
-  -AllowModelDownload
+python -m unittest discover -s tests -t . -v
 ```
 
-缓存完成后的普通运行不访问网络：
+测试不访问网络。固定 BERT 权重或 Python 3.10 不可用时，真实模型 smoke test 会明确跳过；其余 fixture 测试仍需通过。
 
-```powershell
-.\scripts\run-trf-offline.ps1 `
-  -SelfAnnotatorRunId <自我标注-run-id> `
-  -RunId <新的-run-id>
+## 历史记录
 
-& $python .\code\trf\ValidateTRFRun.py `
-  --self-annotator-run-id <自我标注-run-id> `
-  --run-id <run-id>
-```
-
-每个 run-id 只能创建一次，失败后也必须换新 id。TRF 运行保存在
-`output/trf_runs/<run-id>/`；人工语义检查样本位于
-`audit/semantic_review_sample.jsonl`。算法验收完成不等于语义验收通过。
-
-## 目标句 TRF 提取器
-
-`config/trf_target.json` 只是完整 runner 使用的模板，不能直接执行。完整 runner 会在父 run
-中生成 `target-config.generated.json`，以本次离线子 run 的实际路径和 SHA256 替换模板来源。
-目标阶段使用 `qwen3.7-text-embedding` 执行 K=50 → k=16 检索，再用同一两轮消息历史先判断
-`Skill` 类型、后开放生成目标 TRF。正式 Prompt 只使用主伪 TRF。
-
-如需单独恢复或调试已经生成的目标配置，必须显式传入它：
-
-```powershell
-.\scripts\run-target-trf.ps1 `
-  -ConfigPath .\output\trf_full_runs\<parent-id>\target-config.generated.json `
-  -RunId <parent-id>-target `
-  -Mode leave-one-out `
-  -Resume `
-  -AllowNetwork `
-  -PythonExecutable $python
-```
-
-解析失败只有同时增加 `-RetryFailed` 才会重新请求，成功目标不会重调。
-
-运行产物保存在 `output/trf_target_runs/<run-id>/`。`audit/manual_review.jsonl` 的语义状态
-在人工检查前固定为 `pending_manual_review`；leave-one-out 指标只是伪标签一致性，不是
-Gold 准确率。
-
-## 实例判别器
-
-实例判别器位于目标 TRF 之后。它复用目标 run 已保存的 16 条候选，不重新检索；同时从
-目标 run 的 source snapshot 自动锁定上游 `selected/decisions.jsonl`，为 accepted 示例补充
-技能跨度，negative 示例保持空跨度和空伪 TRF。目标 prompt 只包含目标句、目标类型和目标
-TRF，不读取目标自身的 self-annotation 状态或跨度。
-
-先离线准备全部 candidates 和 prompts：
-
-```powershell
-.\scripts\run-instance-discriminator.ps1 `
-  -TargetTRFRunId trf_0831-target `
-  -RunId <new-run-id> `
-  -PrepareOnly `
-  -PythonExecutable $python
-
-& $python .\code\instance_discriminator\ValidateInstanceDiscriminatorRun.py `
-  --run-id <new-run-id>
-```
-
-未来允许网络后，可恢复同一未完成 run。成功目标不会重调；失败目标只有增加
-`-RetryFailed` 才会重新请求：
-
-```powershell
-.\scripts\run-instance-discriminator.ps1 `
-  -TargetTRFRunId trf_0831-target `
-  -RunId <run-id> `
-  -Resume `
-  -AllowNetwork `
-  -ConfirmFullRun `
-  -PythonExecutable $python
-```
-
-Qwen 必须一次返回恰好 16 项结构化判断。程序只保留 helpfulness 4～5 分且角色为
-`supporting` 或 `contrastive` 的示例；按分数、existence score、上游已经保存的 10 位
-similarity、demo idx 排序，最多 8 条，其中 supporting 最多 6 条、contrastive 最多 3 条。
-不会为了凑数回填低分项。少于 2 条、上游目标 TRF 已需复核、或类型为 Skill 但目标 TRF
-为空时，正式记录标为 `needs_review`。
-
-运行产物保存在 `output/instance_discriminator_runs/<run-id>/`，包括锁定来源、candidates、
-prompts、append-only raw response、parsed judgments、selected records、summary、人工审计样本
-和 manifest。v1 只实现 `目标 TRF → 实例判别器` 的单向协作，不接入完整 TRF 父流水线，
-也不宣称技能抽取准确率提升。完整合同见 `INSTANCE_DISCRIMINATOR_DESIGN.md`。
-
-## 一键重跑完整 TRF
-
-`rerun-all-trf.ps1` 会按顺序执行：离线 corpus → 全局候选 → BERT Top-5 → 目标
-Embedding 检索 → 两轮目标 TRF → 联合验证。父 run 自动创建：
-
-- `<RunId>-offline`：本次重新生成的离线 TRF；
-- `<RunId>-target`：只引用上述离线子 run 实际 SHA256 的目标抽取；
-- `output/trf_full_runs/<RunId>/`：父 manifest、动态锁定配置和联合验证结果。
-
-从空 `output/` 开始，先执行零 API 自标注重聚合，再运行完整 leave-one-out：
-
-```powershell
-Set-Location "E:\research\extractor\SkillSentence-Processor-0822"
-
-$env:DASHSCOPE_API_KEY = "<你的 API Key>"
-$env:DASHSCOPE_BASE_URL = "https://<WorkspaceId>.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
-
-conda activate extractor
-$python = (Get-Command python).Source
-$selfRun = "span-xmlc-base5-replay-majority3-anchor-v1"
-$trfRun = "trf-complete-majority3-anchor-v1"
-
-.\scripts\run-reaggregate.ps1 `
-  -SourceRunRoot ".\archive\self-annotation-history\inline-v4-2-full-20260821-001" `
-  -RunId $selfRun `
-  -PythonExecutable $python
-
-.\scripts\rerun-all-trf.ps1 `
-  -SelfAnnotatorRunId $selfRun `
-  -RunId $trfRun `
-  -Mode leave-one-out `
-  -AllowNetwork `
-  -ConfirmFullRun `
-  -PythonExecutable $python
-
-& $python .\code\trf_full\ValidateFullTRFRun.py --run-id $trfRun
-```
-
-当前机器已经缓存固定 BERT 权重。新机器没有缓存时，再增加 `-AllowModelDownload`。
-更稳妥的方式是先准备全部向量、
-检索和 Prompt，再恢复执行 652 次 chat：
-
-```powershell
-.\scripts\rerun-all-trf.ps1 `
-  -SelfAnnotatorRunId $selfRun `
-  -RunId trf-complete-majority3-anchor-v1 `
-  -Mode leave-one-out `
-  -PrepareOnly `
-  -AllowNetwork `
-  -PythonExecutable $python
-
-.\scripts\rerun-all-trf.ps1 `
-  -SelfAnnotatorRunId $selfRun `
-  -RunId trf-complete-majority3-anchor-v1 `
-  -Mode leave-one-out `
-  -Resume `
-  -AllowNetwork `
-  -ConfirmFullRun `
-  -PythonExecutable $python
-```
-
-最终联合验证：
-
-```powershell
-& $python .\code\trf_full\ValidateFullTRFRun.py `
-  --run-id trf-complete-majority3-anchor-v1
-```
-
-父 run、两个派生子 run 都不可覆盖。离线子 run 失败时必须换新的父 `RunId`；目标子 run
-中断时用父 `RunId` 增加 `-Resume`，解析失败还需显式增加 `-RetryFailed`。
-
-## 状态
-
-- `accepted`：存在性门控通过，所有正式跨度均已解决且互不冲突；
-- `negative`：至少四张有效 `no_skill` 票；
-- `unsolved`：存在性未达三票且未判负，或跨度族仍无法稳定裁决；
-- `abstained`：五次结构完整，但有效解析样本少于三次。
-
-只有 `accepted` 与 `negative` 进入 `selected/annotations.json`。
-
-Residual family support 为3至5时进入硬匹配。系统先选择最高频跨度作为锚点，再按锚点
-字符覆盖率和锚点 `word_units` 动态阈值逐一核对其他成员。最高票并列时依次使用最小
-覆盖率、平均覆盖率、跨度紧凑度和字符位置选择确定性 winner。
-
-## 运行输出
-
-每个运行保存在 `output/runs/<run-id>/`：
-
-```text
-manifest.json
-raw/
-parsed/samples.jsonl
-aggregated/consensus.jsonl
-aggregated/aggregation_audit.jsonl
-aggregated/uncertainty_audit.jsonl
-selected/annotations.json
-selected/decisions.jsonl
-```
-
-离线派生运行的 `raw/` 只保存源路径和 SHA256，不复制历史响应。完整技术规则见
-`SELF_ANNOTATOR.md`，设计与迁移依据见 `SELF_ANNOTATOR_XMLC_REFACTOR_PLAN.md`。
+旧版设计文档和实验日志保留在 `research/`。其中出现的旧 `output/*_runs`、`archive/*`、旧包名和旧脚本仅描述当时实验；这些运行产物已经清理，不再是可执行接口。

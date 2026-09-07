@@ -1,5 +1,6 @@
-"""Deterministic offline type-related feature (TRF) pipeline."""
+"""Independent type-related feature (TRF) module."""
 
-from .common import TRFError
+from .offline.common import TRFError
+from .target.common import TargetTRFError
 
-__all__ = ["TRFError"]
+__all__ = ["TRFError", "TargetTRFError"]

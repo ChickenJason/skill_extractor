@@ -86,6 +86,10 @@ def run_judgments(
                 max_reason_characters=max_reason_characters,
             )
             raw_record = {
+                "schema_version": "instance-discriminator-raw-v1",
+                "dataset_id": record["dataset_id"],
+                "record_id": record["record_id"],
+                "source_sha256": record["source_sha256"],
                 "idx": idx,
                 "sentence": record["sentence"],
                 "status": "complete",
@@ -97,6 +101,10 @@ def run_judgments(
             }
         except Exception as error:
             raw_record = {
+                "schema_version": "instance-discriminator-raw-v1",
+                "dataset_id": record["dataset_id"],
+                "record_id": record["record_id"],
+                "source_sha256": record["source_sha256"],
                 "idx": idx,
                 "sentence": record["sentence"],
                 "status": "failed",

@@ -26,6 +26,7 @@ class SelfAnnotationRunPaths:
     """Canonical directories and metadata files for one self-annotation run."""
 
     root: Path
+    prompts: Path
     raw: Path
     parsed: Path
     aggregated: Path
@@ -179,6 +180,7 @@ def build_self_annotation_run_paths(
     root = resolve_project_path(project_root, runs_root) / validate_run_id(run_id)
     return SelfAnnotationRunPaths(
         root=root,
+        prompts=root / "prompts",
         raw=root / "raw",
         parsed=root / "parsed",
         aggregated=root / "aggregated",

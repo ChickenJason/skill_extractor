@@ -14,6 +14,7 @@ CODE_ROOT = PROJECT_ROOT / "code"
 if str(CODE_ROOT) not in sys.path:
     sys.path.insert(0, str(CODE_ROOT))
 
+from common.contracts import record_identity  # noqa: E402
 from common.io_utils import sha256_json  # noqa: E402
 
 
@@ -58,7 +59,7 @@ def _finite_number(value: Any, label: str) -> float:
 
 
 def normalized_target_trfs(target_record: dict[str, Any]) -> list[str]:
-    raw = target_record.get("trfs")
+    raw = target_record.get("trfs", [])
     if not isinstance(raw, list):
         raise _error("Target trfs must be a list")
     result: list[str] = []
@@ -74,32 +75,42 @@ def normalized_target_trfs(target_record: dict[str, Any]) -> list[str]:
 
 def build_candidate_record(
     target: dict[str, Any],
-    retrieval: dict[str, Any],
-    decisions_by_idx: dict[int, dict[str, Any]],
+    candidate_source: dict[str, Any],
+    feature: dict[str, Any] | None,
     expected_count: int,
 ) -> dict[str, Any]:
-    """Join one target's persisted retrieval choices to formal decisions."""
+    """Normalize one target, its candidates, and optional feature context."""
 
     idx = _strict_int(target.get("idx"), "target idx")
+    target_identity = record_identity(target, "target")
     sentence = target.get("sentence")
     if not isinstance(sentence, str) or not sentence.strip():
         raise _error(f"Target idx={idx} has an invalid sentence")
-    if retrieval.get("idx") != idx or retrieval.get("sentence") != sentence:
-        raise _error(f"Target/retrieval idx or sentence mismatch for idx={idx}")
+    if (
+        record_identity(candidate_source, "candidate source") != target_identity
+        or candidate_source.get("sentence") != sentence
+    ):
+        raise _error(f"Target/candidate identity or sentence mismatch for idx={idx}")
 
-    entity_types = target.get("entity_types")
+    evidence_source = feature or target
+    if feature is not None and (
+        record_identity(feature, "feature") != target_identity
+        or feature.get("sentence") != sentence
+    ):
+        raise _error(f"Target/feature identity or sentence mismatch for idx={idx}")
+    entity_types = evidence_source.get("entity_types", [])
     if entity_types not in ([], ["Skill"]):
         raise _error(f"Invalid entity_types for idx={idx}")
-    upstream_status = target.get("status")
+    upstream_status = evidence_source.get("status", "complete")
     if upstream_status not in {"complete", "needs_review"}:
-        raise _error(f"Invalid target TRF status for idx={idx}")
-    upstream_review = target.get("review_reasons")
+        raise _error(f"Invalid feature status for idx={idx}")
+    upstream_review = evidence_source.get("review_reasons", [])
     if not isinstance(upstream_review, list) or not all(
         isinstance(item, str) for item in upstream_review
     ):
         raise _error(f"Invalid target review reasons for idx={idx}")
 
-    selected = retrieval.get("selected")
+    selected = candidate_source.get("selected")
     if not isinstance(selected, list) or len(selected) != expected_count:
         actual = len(selected) if isinstance(selected, list) else "non-list"
         raise _error(
@@ -107,26 +118,36 @@ def build_candidate_record(
         )
 
     candidates: list[dict[str, Any]] = []
-    seen: set[int] = set()
+    seen: set[tuple[str, str]] = set()
+    seen_indexes: set[int] = set()
     for position, source in enumerate(selected, start=1):
         if not isinstance(source, dict):
             raise _error(f"Candidate {position} for idx={idx} must be an object")
         demo_idx = _strict_int(source.get("demo_idx"), "demo_idx")
-        if demo_idx == idx:
-            raise _error(f"Leave-one-out violation: target idx={idx} is its own candidate")
-        if demo_idx in seen:
+        demo_dataset_id = source.get("demo_dataset_id")
+        demo_record_id = source.get("demo_record_id")
+        demo_source_sha256 = source.get("demo_source_sha256")
+        demo_identity = (demo_dataset_id, demo_record_id)
+        if not all(isinstance(value, str) and value for value in demo_identity):
+            raise _error(f"Candidate demo_idx={demo_idx} has no neutral identity")
+        if not isinstance(demo_source_sha256, str) or len(demo_source_sha256) != 64:
+            raise _error(f"Candidate demo_idx={demo_idx} has no source SHA256")
+        if demo_identity == target_identity:
+            raise _error(
+                f"Leave-one-out violation: target identity {target_identity!r} "
+                "is its own candidate"
+            )
+        if demo_identity in seen or demo_idx in seen_indexes:
             raise _error(f"Duplicate candidate demo_idx={demo_idx} for target idx={idx}")
-        seen.add(demo_idx)
-        decision = decisions_by_idx.get(demo_idx)
-        if decision is None:
-            raise _error(f"Candidate demo_idx={demo_idx} has no source decision")
+        seen.add(demo_identity)
+        seen_indexes.add(demo_idx)
         status = source.get("status")
-        if status not in FORMAL_STATUSES or decision.get("status") != status:
-            raise _error(f"Candidate status mismatch for demo_idx={demo_idx}")
+        if status not in FORMAL_STATUSES:
+            raise _error(f"Candidate status is invalid for demo_idx={demo_idx}")
         demo_sentence = source.get("sentence")
-        if demo_sentence != decision.get("sentence") or not isinstance(demo_sentence, str):
-            raise _error(f"Candidate sentence mismatch for demo_idx={demo_idx}")
-        spans = decision.get("spans")
+        if not isinstance(demo_sentence, str) or not demo_sentence:
+            raise _error(f"Candidate sentence is invalid for demo_idx={demo_idx}")
+        spans = source.get("skill_spans")
         if not isinstance(spans, list) or not all(
             isinstance(item, str) and item for item in spans
         ):
@@ -149,11 +170,14 @@ def build_candidate_record(
         existence_score = _finite_number(
             source.get("existence_score"), "existence_score"
         )
-        details = decision.get("accepted_span_details", [])
+        details = source.get("accepted_span_details", [])
         if not isinstance(details, list):
             raise _error(f"Invalid accepted_span_details for demo_idx={demo_idx}")
         candidates.append(
             {
+                "demo_dataset_id": demo_dataset_id,
+                "demo_record_id": demo_record_id,
+                "demo_source_sha256": demo_source_sha256,
                 "demo_idx": demo_idx,
                 "retrieval_rank": selected_rank,
                 "sentence": demo_sentence,
@@ -167,13 +191,18 @@ def build_candidate_record(
         )
 
     return {
+        "schema_version": "candidate-instances-v1",
+        "dataset_id": target_identity[0],
+        "record_id": target_identity[1],
+        "source_sha256": target["source_sha256"],
         "idx": idx,
         "sentence": sentence,
         "target_evidence": {
             "entity_types": list(entity_types),
-            "trfs": normalized_target_trfs(target),
+            "trfs": normalized_target_trfs(evidence_source),
+            "feature_context": "present" if feature is not None else "absent",
         },
-        "upstream_target_trf": {
+        "feature_status": {
             "status": upstream_status,
             "review_reasons": list(upstream_review),
         },
@@ -189,11 +218,20 @@ def build_discriminator_prompt(
 
     target = {
         "sentence": record["sentence"],
-        "entity_types": record["target_evidence"]["entity_types"],
-        "target_trfs": record["target_evidence"]["trfs"],
+        "feature_context": record["target_evidence"]["feature_context"],
     }
+    if record["target_evidence"]["feature_context"] == "present":
+        target.update(
+            {
+                "entity_types": record["target_evidence"]["entity_types"],
+                "target_trfs": record["target_evidence"]["trfs"],
+            }
+        )
     demonstrations = [
         {
+            "demo_dataset_id": item["demo_dataset_id"],
+            "demo_record_id": item["demo_record_id"],
+            "demo_source_sha256": item["demo_source_sha256"],
             "demo_idx": item["demo_idx"],
             "sentence": item["sentence"],
             "status": item["status"],
@@ -241,6 +279,10 @@ def build_discriminator_prompt(
             f"above the limit {max_characters}"
         )
     return {
+        "schema_version": "instance-discriminator-prompt-v1",
+        "dataset_id": record["dataset_id"],
+        "record_id": record["record_id"],
+        "source_sha256": record["source_sha256"],
         "idx": record["idx"],
         "sentence": record["sentence"],
         "demo_indexes": [item["demo_idx"] for item in record["candidates"]],
@@ -370,6 +412,10 @@ def build_parsed_record(
     record: dict[str, Any], judgments: list[dict[str, Any]], chat_model: str
 ) -> dict[str, Any]:
     return {
+        "schema_version": "instance-judgments-v1",
+        "dataset_id": record["dataset_id"],
+        "record_id": record["record_id"],
+        "source_sha256": record["source_sha256"],
         "idx": record["idx"],
         "sentence": record["sentence"],
         "status": "complete",
@@ -387,8 +433,8 @@ def build_selected_record(
 ) -> dict[str, Any]:
     result = apply_hard_gate(record["candidates"], judgments, gate)
     reasons: list[str] = []
-    if record["upstream_target_trf"]["status"] == "needs_review":
-        reasons.append("upstream_target_trf_needs_review")
+    if record["feature_status"]["status"] == "needs_review":
+        reasons.append("feature_context_needs_review")
     evidence = record["target_evidence"]
     if evidence["entity_types"] == ["Skill"] and not evidence["trfs"]:
         reasons.append("skill_type_without_target_trfs")
@@ -398,6 +444,10 @@ def build_selected_record(
     elif count < gate["minimum_for_complete"]:
         reasons.append("insufficient_helpful_examples")
     return {
+        "schema_version": "instance-selection-v1",
+        "dataset_id": record["dataset_id"],
+        "record_id": record["record_id"],
+        "source_sha256": record["source_sha256"],
         "idx": record["idx"],
         "sentence": record["sentence"],
         "status": "needs_review" if reasons else "complete",
@@ -408,6 +458,6 @@ def build_selected_record(
         "selected": result["selected"],
         "rejected_demo_ids": result["rejected_demo_ids"],
         "review_reasons": reasons,
-        "upstream_review_reasons": record["upstream_target_trf"]["review_reasons"],
+        "feature_review_reasons": record["feature_status"]["review_reasons"],
         "models": {"chat": chat_model},
     }

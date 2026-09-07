@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
+  "module": "instance_discriminator",
   "pipeline_version": "instance-discriminator-v1",
-  "source": {
-    "target_runs_root": "output/trf_target_runs",
+  "inputs": {
     "candidate_count": 16
   },
   "provider": {
@@ -32,6 +32,6 @@
     "review_sample_size": 20
   },
   "output": {
-    "runs_root": "output/instance_discriminator_runs"
+    "runs_root": "output/instance_discriminator"
   }
 }
