@@ -1,0 +1,41 @@
+{
+  "schema_version": "demonstration-set-v1",
+  "dataset_id": "skill-sentences-326-v2",
+  "created_at": "2026-09-17T18:11:54Z",
+  "description": "Canonical 326-record demonstration set promoted from skill326-self-20260917-v1.",
+  "identity": {
+    "primary_key": [
+      "dataset_id",
+      "record_id"
+    ],
+    "legacy_ordering_field": "idx"
+  },
+  "counts": {
+    "total": 326,
+    "accepted": 230,
+    "negative": 89,
+    "unsolved": 7,
+    "abstained": 0,
+    "formal": 319
+  },
+  "files": {
+    "records": {
+      "path": "records.jsonl",
+      "sha256": "5e36e62d17fd29f7fadf8428a987c9b1d43cb478e75bb2b7d127fb1c5d029677",
+      "bytes": 368253
+    },
+    "audit": {
+      "path": "audit.jsonl",
+      "sha256": "adf696e32760f59065a912f3bbfab4ea1e6b8fad4f30c14eb5dc95ac2c6d09ff",
+      "bytes": 414850
+    }
+  },
+  "provenance": {
+    "producer": "self_annotator",
+    "source_run_id": "skill326-self-20260917-v1",
+    "source_manifest_sha256": "6f3a95412578bdb4afd71478e9ac34f76150c7fe58a9f41d2f1662093d565623",
+    "source_records_sha256": "be2a8604d17fb89c10f5fa919ca632296fdb9e5ddbc9b6505e03aca2b4e338f3",
+    "source_audit_sha256": "263ff47d0d2bf423efce7dfe1f7ac584cb519ad4b07b975197316264c1f69084",
+    "raw_responses_retained": true
+  }
+}

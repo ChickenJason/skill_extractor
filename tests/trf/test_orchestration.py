@@ -72,11 +72,16 @@ class FullRunFakeClient:
         model: str,
     ) -> dict[str, Any]:
         self.chat_calls += 1
-        content = (
-            '{"entity_types":["Skill"]}'
-            if len(messages) == 1
-            else '{"trfs":["communication","open full-run feature"]}'
-        )
+        combined = "\n".join(item["content"] for item in messages)
+        if "TRF expert's final exact Skill span extractor" in combined:
+            payload = json.loads(messages[1]["content"])
+            content = json.dumps(
+                {"annotated_sentence": payload["target_sentence"]}, ensure_ascii=False
+            )
+        elif len(messages) == 1:
+            content = '{"entity_types":["Skill"]}'
+        else:
+            content = '{"trfs":["communication","open full-run feature"]}'
         return {
             "content": content,
             "finish_reason": "stop",
@@ -181,13 +186,19 @@ class CompleteTRFRunTests(unittest.TestCase):
             result = validate("full-test", config)
             self.assertEqual(result["status"], "valid")
             self.assertEqual(result["targets"], 2)
-            self.assertEqual(client.chat_calls, 4)
+            self.assertEqual(client.chat_calls, 6)
             target_records = read_jsonl(
                 Path(manifest["children"]["target"]["root"])
                 / "parsed"
                 / "records.jsonl"
             )
             self.assertEqual(len(target_records), 2)
+            predictions = read_jsonl(
+                Path(manifest["children"]["target"]["root"])
+                / "prediction"
+                / "records.jsonl"
+            )
+            self.assertEqual(len(predictions), 2)
 
     def test_unrestricted_online_run_requires_confirmation(self) -> None:
         args = Namespace(

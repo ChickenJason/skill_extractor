@@ -16,6 +16,10 @@ if str(CODE_ROOT) not in sys.path:
 
 from common.contracts import record_identity  # noqa: E402
 from common.io_utils import sha256_json  # noqa: E402
+from common.skill_prediction import (  # noqa: E402
+    PROMPT_SCHEMA,
+    SKILL_SPAN_INSTRUCTION,
+)
 
 
 REASON_CODES = frozenset(
@@ -33,7 +37,7 @@ REASON_CODES = frozenset(
 ROLES = frozenset({"supporting", "contrastive", "irrelevant"})
 FORMAL_STATUSES = frozenset({"accepted", "negative"})
 JUDGMENT_KEYS = frozenset(
-    {"demo_idx", "helpfulness_score", "role", "reason_codes", "reason"}
+    {"demo_idx", "helpfulness_score", "role", "reason_codes"}
 )
 
 
@@ -249,7 +253,8 @@ def build_discriminator_prompt(
         "target contains a Skill and locate its exact source-text boundary. Topic similarity "
         "alone is not helpfulness. Accepted demonstrations may be supporting or irrelevant; "
         "negative demonstrations may be contrastive or irrelevant. Return one JSON object "
-        "with exactly one judgment for every supplied demo_idx and no additional keys."
+        "with exactly one judgment for every supplied demo_idx and no additional keys. "
+        "Do not provide prose explanations and never return a reason field."
     )
     schema = {
         "required_output": {
@@ -259,7 +264,6 @@ def build_discriminator_prompt(
                     "helpfulness_score": "integer 1..5",
                     "role": "supporting | contrastive | irrelevant",
                     "reason_codes": sorted(REASON_CODES),
-                    "reason": "non-empty audit reason, at most 240 characters",
                 }
             ]
         },
@@ -279,7 +283,7 @@ def build_discriminator_prompt(
             f"above the limit {max_characters}"
         )
     return {
-        "schema_version": "instance-discriminator-prompt-v1",
+        "schema_version": "instance-discriminator-prompt-v2",
         "dataset_id": record["dataset_id"],
         "record_id": record["record_id"],
         "source_sha256": record["source_sha256"],
@@ -295,8 +299,6 @@ def build_discriminator_prompt(
 def parse_judgments(
     content: str,
     candidates: list[dict[str, Any]],
-    *,
-    max_reason_characters: int = 240,
 ) -> list[dict[str, Any]]:
     """Parse the complete batch fail-closed; one malformed item fails the target."""
 
@@ -340,19 +342,11 @@ def parse_judgments(
             or len(codes) != len(set(codes))
         ):
             raise _error(f"Invalid reason_codes for demo_idx={demo_idx}")
-        reason = item.get("reason")
-        if (
-            not isinstance(reason, str)
-            or not reason.strip()
-            or len(reason) > max_reason_characters
-        ):
-            raise _error(f"Invalid audit reason for demo_idx={demo_idx}")
         parsed_by_idx[demo_idx] = {
             "demo_idx": demo_idx,
             "helpfulness_score": score,
             "role": role,
             "reason_codes": list(codes),
-            "reason": reason,
         }
     if set(parsed_by_idx) != expected_ids:
         raise _error("Judgment IDs are incomplete")
@@ -364,39 +358,27 @@ def apply_hard_gate(
     judgments: list[dict[str, Any]],
     gate: dict[str, Any],
 ) -> dict[str, Any]:
+    """Keep every eligible candidate in input order, without ranking or caps."""
+
     candidates_by_idx = {item["demo_idx"]: item for item in candidates}
     judgments_by_idx = {item["demo_idx"]: item for item in judgments}
     if set(candidates_by_idx) != set(judgments_by_idx):
         raise _error("Candidate and judgment IDs do not match")
     eligible = [
-        {**candidates_by_idx[demo_idx], **judgments_by_idx[demo_idx]}
-        for demo_idx in candidates_by_idx
-        if judgments_by_idx[demo_idx]["helpfulness_score"]
-        >= gate["minimum_helpfulness"]
-        and judgments_by_idx[demo_idx]["role"] != "irrelevant"
+        {**candidate, **judgments_by_idx[candidate["demo_idx"]]}
+        for candidate in candidates
+        if judgments_by_idx[candidate["demo_idx"]]["helpfulness_score"]
+        > gate["minimum_helpfulness"]
+        and judgments_by_idx[candidate["demo_idx"]]["role"] != "irrelevant"
     ]
-    eligible.sort(
-        key=lambda item: (
-            -item["helpfulness_score"],
-            -item["existence_score"],
-            -item["similarity"],
-            item["demo_idx"],
-        )
-    )
-    selected: list[dict[str, Any]] = []
-    role_counts = {"supporting": 0, "contrastive": 0}
-    role_limits = {
-        "supporting": gate["max_supporting"],
-        "contrastive": gate["max_contrastive"],
+    selected = [
+        {**item, "gate_rank": position}
+        for position, item in enumerate(eligible, start=1)
+    ]
+    role_counts = {
+        role: sum(item["role"] == role for item in selected)
+        for role in ("supporting", "contrastive")
     }
-    for item in eligible:
-        if len(selected) >= gate["max_selected"]:
-            break
-        role = item["role"]
-        if role_counts[role] >= role_limits[role]:
-            continue
-        role_counts[role] += 1
-        selected.append({**item, "gate_rank": len(selected) + 1})
     selected_ids = {item["demo_idx"] for item in selected}
     return {
         "selected": selected,
@@ -412,7 +394,7 @@ def build_parsed_record(
     record: dict[str, Any], judgments: list[dict[str, Any]], chat_model: str
 ) -> dict[str, Any]:
     return {
-        "schema_version": "instance-judgments-v1",
+        "schema_version": "instance-judgments-v2",
         "dataset_id": record["dataset_id"],
         "record_id": record["record_id"],
         "source_sha256": record["source_sha256"],
@@ -460,4 +442,105 @@ def build_selected_record(
         "review_reasons": reasons,
         "feature_review_reasons": record["feature_status"]["review_reasons"],
         "models": {"chat": chat_model},
+    }
+
+
+def build_empty_selected_record(
+    record: dict[str, Any], chat_model: str
+) -> dict[str, Any]:
+    """Preserve target coverage after a terminal judgment validation failure."""
+
+    reasons = ["exemplar_judgment_validation_failed", "no_helpful_examples"]
+    if record["feature_status"]["status"] == "needs_review":
+        reasons.insert(0, "feature_context_needs_review")
+    return {
+        "schema_version": "instance-selection-v1",
+        "dataset_id": record["dataset_id"],
+        "record_id": record["record_id"],
+        "source_sha256": record["source_sha256"],
+        "idx": record["idx"],
+        "sentence": record["sentence"],
+        "status": "needs_review",
+        "target_evidence": record["target_evidence"],
+        "candidate_count": record["candidate_count"],
+        "eligible_count": 0,
+        "selected_count": 0,
+        "selected": [],
+        "rejected_demo_ids": [item["demo_idx"] for item in record["candidates"]],
+        "review_reasons": reasons,
+        "feature_review_reasons": record["feature_status"]["review_reasons"],
+        "models": {"chat": chat_model},
+    }
+
+
+def build_skill_prediction_prompt(
+    selected_record: dict[str, Any], max_characters: int
+) -> dict[str, Any]:
+    """Build the exemplar-expert final prompt from hard-gate selections only."""
+
+    selected = selected_record.get("selected")
+    if (
+        not isinstance(selected, list)
+        or len(selected) != selected_record.get("selected_count")
+    ):
+        raise _error(
+            f"Selected exemplar count is invalid for idx={selected_record.get('idx')}"
+        )
+    examples = [
+        {
+            "demo_idx": item["demo_idx"],
+            "sentence": item["sentence"],
+            "skill_spans": list(item["skill_spans"]),
+            "helpfulness_score": item["helpfulness_score"],
+            "role": item["role"],
+        }
+        for item in selected
+    ]
+    system = (
+        "You are the exemplar expert's final exact Skill span extractor. Supporting examples "
+        "show transferable positive boundaries; contrastive examples show relevant negative "
+        "boundaries. Helpfulness scores indicate evidential usefulness, not a license to copy "
+        "text absent from the target.\n\n"
+        + SKILL_SPAN_INSTRUCTION
+    )
+    user = json.dumps(
+        {
+            "target_sentence": selected_record["sentence"],
+            "selected_examples": examples,
+            "required_output": {"annotated_sentence": "target sentence with optional tags"},
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    character_count = sum(len(item["content"]) for item in messages)
+    if character_count > max_characters:
+        raise _error(
+            f"Exemplar skill prediction prompt for idx={selected_record['idx']} has "
+            f"{character_count} characters, above the limit {max_characters}"
+        )
+    evidence = {
+        "selected_count": len(examples),
+        "selected_examples": [
+            {
+                "demo_idx": item["demo_idx"],
+                "helpfulness_score": item["helpfulness_score"],
+                "role": item["role"],
+            }
+            for item in examples
+        ],
+    }
+    return {
+        "schema_version": PROMPT_SCHEMA,
+        "branch": "exemplar",
+        "dataset_id": selected_record["dataset_id"],
+        "record_id": selected_record["record_id"],
+        "source_sha256": selected_record["source_sha256"],
+        "idx": selected_record["idx"],
+        "sentence": selected_record["sentence"],
+        "messages": messages,
+        "prompt_sha256": sha256_json(messages),
+        "character_count": character_count,
+        "review_reasons": list(selected_record["review_reasons"]),
+        "evidence": evidence,
     }

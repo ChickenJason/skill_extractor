@@ -1,0 +1,602 @@
+[
+  {
+    "idx": 1,
+    "sentence": "You will analyze sales data with SQL and build interactive dashboards in Tableau .",
+    "has_skill": 1,
+    "spans": ["analyze sales data", "SQL", "build interactive dashboards", "Tableau"]
+  },
+  {
+    "idx": 2,
+    "sentence": "The role requires Python programming and experience developing machine learning models with scikit-learn .",
+    "has_skill": 1,
+    "spans": ["Python programming", "developing machine learning models", "scikit-learn"]
+  },
+  {
+    "idx": 3,
+    "sentence": "You will design REST APIs and implement backend services using FastAPI .",
+    "has_skill": 1,
+    "spans": ["design REST APIs", "implement backend services", "FastAPI"]
+  },
+  {
+    "idx": 4,
+    "sentence": "Maintain CI/CD pipelines and deploy containerized applications with Docker and Kubernetes .",
+    "has_skill": 1,
+    "spans": ["Maintain CI/CD pipelines", "deploy containerized applications", "Docker", "Kubernetes"]
+  },
+  {
+    "idx": 5,
+    "sentence": "Prepare financial forecasts and perform variance analysis using advanced Excel .",
+    "has_skill": 1,
+    "spans": ["Prepare financial forecasts", "perform variance analysis", "Excel"]
+  },
+  {
+    "idx": 6,
+    "sentence": "Support the monthly close process and prepare financial statements in accordance with IFRS .",
+    "has_skill": 1,
+    "spans": ["monthly close process", "prepare financial statements", "IFRS"]
+  },
+  {
+    "idx": 7,
+    "sentence": "Develop demand forecasts and optimize inventory levels across regional distribution centers .",
+    "has_skill": 1,
+    "spans": ["Develop demand forecasts", "optimize inventory levels"]
+  },
+  {
+    "idx": 8,
+    "sentence": "Configure purchasing workflows and maintain master data in SAP S/4HANA .",
+    "has_skill": 1,
+    "spans": ["Configure purchasing workflows", "maintain master data", "SAP S/4HANA"]
+  },
+  {
+    "idx": 9,
+    "sentence": "You will negotiate supplier contracts and manage long-term supplier relationships .",
+    "has_skill": 1,
+    "spans": ["negotiate supplier contracts", "manage long-term supplier relationships"]
+  },
+  {
+    "idx": 10,
+    "sentence": "Operate a forklift safely and process warehouse orders with handheld barcode scanners .",
+    "has_skill": 1,
+    "spans": ["Operate a forklift", "process warehouse orders", "handheld barcode scanners"]
+  },
+  {
+    "idx": 11,
+    "sentence": "Maintain GMP documentation and coordinate corrective and preventive actions through the CAPA system .",
+    "has_skill": 1,
+    "spans": ["Maintain GMP documentation", "coordinate corrective and preventive actions", "CAPA"]
+  },
+  {
+    "idx": 12,
+    "sentence": "Perform analytical testing using HPLC and gas chromatography .",
+    "has_skill": 1,
+    "spans": ["analytical testing", "HPLC", "gas chromatography"]
+  },
+  {
+    "idx": 13,
+    "sentence": "Conduct PCR amplification gel electrophoresis and DNA purification for routine laboratory studies .",
+    "has_skill": 1,
+    "spans": ["PCR amplification", "gel electrophoresis", "DNA purification"]
+  },
+  {
+    "idx": 14,
+    "sentence": "Prepare biological samples for fluorescence microscopy and complete quantitative image analysis .",
+    "has_skill": 1,
+    "spans": ["Prepare biological samples", "fluorescence microscopy", "quantitative image analysis"]
+  },
+  {
+    "idx": 15,
+    "sentence": "Coordinate clinical trial protocols and ensure study activities comply with Good Clinical Practice .",
+    "has_skill": 1,
+    "spans": ["Coordinate clinical trial protocols", "Good Clinical Practice"]
+  },
+  {
+    "idx": 16,
+    "sentence": "Complete patient assessments and develop individualized care plans with the multidisciplinary team .",
+    "has_skill": 1,
+    "spans": ["Complete patient assessments", "develop individualized care plans"]
+  },
+  {
+    "idx": 17,
+    "sentence": "Create detailed mechanical drawings and three-dimensional assemblies in SolidWorks .",
+    "has_skill": 1,
+    "spans": ["Create detailed mechanical drawings", "three-dimensional assemblies", "SolidWorks"]
+  },
+  {
+    "idx": 18,
+    "sentence": "Set up CNC machines and write CNC programs for precision metal components .",
+    "has_skill": 1,
+    "spans": ["Set up CNC machines", "write CNC programs"]
+  },
+  {
+    "idx": 19,
+    "sentence": "Troubleshoot PLC control systems and modify programs in Siemens TIA Portal .",
+    "has_skill": 1,
+    "spans": ["Troubleshoot PLC control systems", "modify programs", "Siemens TIA Portal"]
+  },
+  {
+    "idx": 20,
+    "sentence": "Plan preventive maintenance and diagnose faults in automated production equipment .",
+    "has_skill": 1,
+    "spans": ["Plan preventive maintenance", "diagnose faults"]
+  },
+  {
+    "idx": 21,
+    "sentence": "Conduct renewable energy feasibility studies and map project constraints with GIS .",
+    "has_skill": 1,
+    "spans": ["renewable energy feasibility studies", "map project constraints", "GIS"]
+  },
+  {
+    "idx": 22,
+    "sentence": "Perform power flow analysis and short-circuit studies using ETAP .",
+    "has_skill": 1,
+    "spans": ["power flow analysis", "short-circuit studies", "ETAP"]
+  },
+  {
+    "idx": 23,
+    "sentence": "Provision cloud infrastructure on AWS and manage infrastructure as code with Terraform .",
+    "has_skill": 1,
+    "spans": ["Provision cloud infrastructure", "AWS", "infrastructure as code", "Terraform"]
+  },
+  {
+    "idx": 24,
+    "sentence": "Investigate cybersecurity incidents and monitor security events through a SIEM platform .",
+    "has_skill": 1,
+    "spans": ["Investigate cybersecurity incidents", "monitor security events", "SIEM"]
+  },
+  {
+    "idx": 25,
+    "sentence": "Conduct vulnerability assessments and penetration testing for customer-facing applications .",
+    "has_skill": 1,
+    "spans": ["vulnerability assessments", "penetration testing"]
+  },
+  {
+    "idx": 26,
+    "sentence": "Administer Linux servers and automate recurring tasks with shell scripting .",
+    "has_skill": 1,
+    "spans": ["Administer Linux servers", "automate recurring tasks", "shell scripting"]
+  },
+  {
+    "idx": 27,
+    "sentence": "Develop scalable microservices in Java using the Spring Boot framework .",
+    "has_skill": 1,
+    "spans": ["Develop scalable microservices", "Java", "Spring Boot"]
+  },
+  {
+    "idx": 28,
+    "sentence": "Build accessible user interfaces with React and TypeScript .",
+    "has_skill": 1,
+    "spans": ["Build accessible user interfaces", "React", "TypeScript"]
+  },
+  {
+    "idx": 29,
+    "sentence": "Develop and maintain iOS applications using Swift and Xcode .",
+    "has_skill": 1,
+    "spans": ["Develop and maintain iOS applications", "Swift", "Xcode"]
+  },
+  {
+    "idx": 30,
+    "sentence": "Create native Android features in Kotlin and publish releases through Google Play Console .",
+    "has_skill": 1,
+    "spans": ["Create native Android features", "Kotlin", "publish releases", "Google Play Console"]
+  },
+  {
+    "idx": 31,
+    "sentence": "Write unit and integration tests in pytest and investigate failed automated test runs .",
+    "has_skill": 1,
+    "spans": ["Write unit and integration tests", "pytest", "investigate failed automated test runs"]
+  },
+  {
+    "idx": 32,
+    "sentence": "Manage source code with Git and track software defects in Jira .",
+    "has_skill": 1,
+    "spans": ["Manage source code", "Git", "track software defects", "Jira"]
+  },
+  {
+    "idx": 33,
+    "sentence": "Develop natural language processing pipelines and fine-tune transformer models .",
+    "has_skill": 1,
+    "spans": ["Develop natural language processing pipelines", "fine-tune transformer models"]
+  },
+  {
+    "idx": 34,
+    "sentence": "Train computer vision models in PyTorch for industrial defect detection .",
+    "has_skill": 1,
+    "spans": ["Train computer vision models", "PyTorch", "industrial defect detection"]
+  },
+  {
+    "idx": 35,
+    "sentence": "Design A/B tests and apply causal inference methods to evaluate product changes .",
+    "has_skill": 1,
+    "spans": ["Design A/B tests", "apply causal inference methods"]
+  },
+  {
+    "idx": 36,
+    "sentence": "Plan controlled experiments and perform statistical analysis of research data .",
+    "has_skill": 1,
+    "spans": ["Plan controlled experiments", "perform statistical analysis"]
+  },
+  {
+    "idx": 37,
+    "sentence": "Write technical reports and prepare publication-ready documents in LaTeX .",
+    "has_skill": 1,
+    "spans": ["Write technical reports", "prepare publication-ready documents", "LaTeX"]
+  },
+  {
+    "idx": 38,
+    "sentence": "Conduct systematic literature reviews using Scopus and Web of Science .",
+    "has_skill": 1,
+    "spans": ["Conduct systematic literature reviews", "Scopus", "Web of Science"]
+  },
+  {
+    "idx": 39,
+    "sentence": "Develop grant proposals and coordinate submissions to external funding bodies .",
+    "has_skill": 1,
+    "spans": ["Develop grant proposals", "coordinate submissions"]
+  },
+  {
+    "idx": 40,
+    "sentence": "Deliver university teaching and design curricula for undergraduate business courses .",
+    "has_skill": 1,
+    "spans": ["university teaching", "design curricula"]
+  },
+  {
+    "idx": 41,
+    "sentence": "Professional proficiency in written and spoken English and Danish is required .",
+    "has_skill": 1,
+    "spans": ["English", "Danish"]
+  },
+  {
+    "idx": 42,
+    "sentence": "Present complex findings to large audiences and facilitate question-and-answer sessions .",
+    "has_skill": 1,
+    "spans": ["Present complex findings", "facilitate question-and-answer sessions"]
+  },
+  {
+    "idx": 43,
+    "sentence": "Facilitate stakeholder workshops and translate business needs into system requirements .",
+    "has_skill": 1,
+    "spans": ["Facilitate stakeholder workshops", "translate business needs into system requirements"]
+  },
+  {
+    "idx": 44,
+    "sentence": "Lead Scrum ceremonies and coach delivery teams in agile ways of working .",
+    "has_skill": 1,
+    "spans": ["Lead Scrum ceremonies", "coach delivery teams", "agile ways of working"]
+  },
+  {
+    "idx": 45,
+    "sentence": "Build project schedules in Microsoft Project and monitor milestones against the approved baseline .",
+    "has_skill": 1,
+    "spans": ["Build project schedules", "Microsoft Project", "monitor milestones"]
+  },
+  {
+    "idx": 46,
+    "sentence": "Maintain the project risk register and develop mitigation plans with workstream owners .",
+    "has_skill": 1,
+    "spans": ["Maintain the project risk register", "develop mitigation plans"]
+  },
+  {
+    "idx": 47,
+    "sentence": "Conduct user interviews and create interactive prototypes in Figma .",
+    "has_skill": 1,
+    "spans": ["Conduct user interviews", "create interactive prototypes", "Figma"]
+  },
+  {
+    "idx": 48,
+    "sentence": "Optimize website content for search engines and analyze traffic in Google Analytics .",
+    "has_skill": 1,
+    "spans": ["Optimize website content for search engines", "analyze traffic", "Google Analytics"]
+  },
+  {
+    "idx": 49,
+    "sentence": "Edit digital content and publish multilingual pages through a content management system .",
+    "has_skill": 1,
+    "spans": ["Edit digital content", "publish multilingual pages", "content management system"]
+  },
+  {
+    "idx": 50,
+    "sentence": "Maintain sales opportunities and produce pipeline reports in Salesforce CRM .",
+    "has_skill": 1,
+    "spans": ["Maintain sales opportunities", "produce pipeline reports", "Salesforce CRM"]
+  },
+  {
+    "idx": 51,
+    "sentence": "Resolve customer support tickets and maintain service records in Zendesk .",
+    "has_skill": 1,
+    "spans": ["Resolve customer support tickets", "maintain service records", "Zendesk"]
+  },
+  {
+    "idx": 52,
+    "sentence": "Use conflict resolution and de-escalation techniques when handling difficult customer conversations .",
+    "has_skill": 1,
+    "spans": ["conflict resolution", "de-escalation techniques"]
+  },
+  {
+    "idx": 53,
+    "sentence": "Apply HACCP procedures and maintain accurate food safety records .",
+    "has_skill": 1,
+    "spans": ["Apply HACCP procedures", "maintain accurate food safety records"]
+  },
+  {
+    "idx": 54,
+    "sentence": "Prepare dishes in a commercial kitchen using safe knife techniques and portion control .",
+    "has_skill": 1,
+    "spans": ["Prepare dishes", "safe knife techniques", "portion control"]
+  },
+  {
+    "idx": 55,
+    "sentence": "Prepare espresso-based beverages and calibrate commercial coffee grinders .",
+    "has_skill": 1,
+    "spans": ["Prepare espresso-based beverages", "calibrate commercial coffee grinders"]
+  },
+  {
+    "idx": 56,
+    "sentence": "Drive a delivery vehicle and complete daily vehicle safety inspections .",
+    "has_skill": 1,
+    "spans": ["Drive a delivery vehicle", "complete daily vehicle safety inspections"]
+  },
+  {
+    "idx": 57,
+    "sentence": "Plan efficient delivery routes and navigate with GPS mapping tools .",
+    "has_skill": 1,
+    "spans": ["Plan efficient delivery routes", "navigate with GPS mapping tools"]
+  },
+  {
+    "idx": 58,
+    "sentence": "Provide first aid and perform CPR during workplace emergencies .",
+    "has_skill": 1,
+    "spans": ["Provide first aid", "perform CPR"]
+  },
+  {
+    "idx": 59,
+    "sentence": "Plan age-appropriate activities and follow child safeguarding procedures .",
+    "has_skill": 1,
+    "spans": ["Plan age-appropriate activities", "child safeguarding procedures"]
+  },
+  {
+    "idx": 60,
+    "sentence": "Develop lesson plans and apply classroom management techniques in a multilingual classroom .",
+    "has_skill": 1,
+    "spans": ["Develop lesson plans", "classroom management techniques"]
+  },
+  {
+    "idx": 61,
+    "sentence": "Maintain the general ledger and reconcile bank accounts in QuickBooks .",
+    "has_skill": 1,
+    "spans": ["Maintain the general ledger", "reconcile bank accounts", "QuickBooks"]
+  },
+  {
+    "idx": 62,
+    "sentence": "Process monthly payroll and apply current payroll tax regulations .",
+    "has_skill": 1,
+    "spans": ["Process monthly payroll", "payroll tax regulations"]
+  },
+  {
+    "idx": 63,
+    "sentence": "Conduct data protection impact assessments and advise teams on GDPR compliance .",
+    "has_skill": 1,
+    "spans": ["data protection impact assessments", "GDPR compliance"]
+  },
+  {
+    "idx": 64,
+    "sentence": "Perform legal research and draft commercial contract clauses .",
+    "has_skill": 1,
+    "spans": ["Perform legal research", "draft commercial contract clauses"]
+  },
+  {
+    "idx": 65,
+    "sentence": "Evaluate procurement tenders and prepare evidence-based supplier recommendations .",
+    "has_skill": 1,
+    "spans": ["Evaluate procurement tenders", "prepare evidence-based supplier recommendations"]
+  },
+  {
+    "idx": 66,
+    "sentence": "Plan internal quality audits and assess processes against ISO 9001 requirements .",
+    "has_skill": 1,
+    "spans": ["Plan internal quality audits", "ISO 9001"]
+  },
+  {
+    "idx": 67,
+    "sentence": "Apply Lean Six Sigma methods and create process maps for operational improvement projects .",
+    "has_skill": 1,
+    "spans": ["Lean Six Sigma", "create process maps"]
+  },
+  {
+    "idx": 68,
+    "sentence": "Lead root cause analysis and document corrective actions using the 8D methodology .",
+    "has_skill": 1,
+    "spans": ["root cause analysis", "document corrective actions", "8D methodology"]
+  },
+  {
+    "idx": 69,
+    "sentence": "Prepare international shipping documents and arrange freight bookings under Incoterms .",
+    "has_skill": 1,
+    "spans": ["Prepare international shipping documents", "arrange freight bookings", "Incoterms"]
+  },
+  {
+    "idx": 70,
+    "sentence": "Coordinate the monthly sales and operations planning process and balance supply with demand .",
+    "has_skill": 1,
+    "spans": ["sales and operations planning", "balance supply with demand"]
+  },
+  {
+    "idx": 71,
+    "sentence": "Perform marine welding and inspect completed welds for visible defects .",
+    "has_skill": 1,
+    "spans": ["marine welding", "inspect completed welds"]
+  },
+  {
+    "idx": 72,
+    "sentence": "Read electrical schematics and diagnose circuits with a digital multimeter .",
+    "has_skill": 1,
+    "spans": ["Read electrical schematics", "diagnose circuits", "digital multimeter"]
+  },
+  {
+    "idx": 73,
+    "sentence": "Prepare models for 3D printing and configure print settings in slicing software .",
+    "has_skill": 1,
+    "spans": ["Prepare models for 3D printing", "configure print settings", "slicing software"]
+  },
+  {
+    "idx": 74,
+    "sentence": "Record and mix multitrack audio sessions using Pro Tools .",
+    "has_skill": 1,
+    "spans": ["Record and mix multitrack audio sessions", "Pro Tools"]
+  },
+  {
+    "idx": 75,
+    "sentence": "Create brand assets with Adobe Illustrator and retouch images in Adobe Photoshop .",
+    "has_skill": 1,
+    "spans": ["Create brand assets", "Adobe Illustrator", "retouch images", "Adobe Photoshop"]
+  },
+  {
+    "idx": 76,
+    "sentence": "Edit promotional videos in Adobe Premiere Pro and create motion graphics in After Effects .",
+    "has_skill": 1,
+    "spans": ["Edit promotional videos", "Adobe Premiere Pro", "create motion graphics", "After Effects"]
+  },
+  {
+    "idx": 77,
+    "sentence": "Photograph corporate events and process RAW images in Lightroom .",
+    "has_skill": 1,
+    "spans": ["Photograph corporate events", "process RAW images", "Lightroom"]
+  },
+  {
+    "idx": 78,
+    "sentence": "Plan social media campaigns and evaluate engagement metrics across digital channels .",
+    "has_skill": 1,
+    "spans": ["Plan social media campaigns", "evaluate engagement metrics"]
+  },
+  {
+    "idx": 79,
+    "sentence": "Coordinate event logistics manage vendor contracts and control event budgets .",
+    "has_skill": 1,
+    "spans": ["Coordinate event logistics", "manage vendor contracts", "control event budgets"]
+  },
+  {
+    "idx": 80,
+    "sentence": "Maintain donor records and prepare fundraising reports using a donor management database .",
+    "has_skill": 1,
+    "spans": ["Maintain donor records", "prepare fundraising reports", "donor management database"]
+  },
+  {
+    "idx": 81,
+    "sentence": "You are reliable punctual and committed to delivering high-quality work .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 82,
+    "sentence": "The successful candidate must be available for evening and weekend shifts .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 83,
+    "sentence": "Applicants must hold a valid permit to work in <LOCATION> .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 84,
+    "sentence": "A relevant bachelor's degree or equivalent qualification is required .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 85,
+    "sentence": "The position is based at our central office three days each week .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 86,
+    "sentence": "You should be willing to travel internationally up to twenty percent of the year .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 87,
+    "sentence": "The work requires standing for long periods and lifting packages weighing up to twenty kilograms .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 88,
+    "sentence": "We value a positive attitude curiosity and respect for colleagues .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 89,
+    "sentence": "You enjoy a busy environment and remain motivated when priorities change .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 90,
+    "sentence": "The preferred start date is the first Monday of next month .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 91,
+    "sentence": "Employment is subject to a satisfactory background check .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 92,
+    "sentence": "You take pride in helping customers and representing the company professionally .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 93,
+    "sentence": "We are looking for someone who enjoys learning and welcomes new challenges .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 94,
+    "sentence": "The role offers considerable autonomy and regular contact with colleagues across the organization .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 95,
+    "sentence": "The compensation package includes a pension contribution and private health insurance .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 96,
+    "sentence": "You will join a friendly team that celebrates shared achievements .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 97,
+    "sentence": "This outdoor position continues in most weather conditions throughout the year .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 98,
+    "sentence": "A clean driving record is required before employment can begin .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 99,
+    "sentence": "Candidates must live within reasonable commuting distance of the workplace .",
+    "has_skill": 0,
+    "spans": []
+  },
+  {
+    "idx": 100,
+    "sentence": "We welcome applications from all qualified candidates regardless of background .",
+    "has_skill": 0,
+    "spans": []
+  }
+]

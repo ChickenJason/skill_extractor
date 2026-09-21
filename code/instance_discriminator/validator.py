@@ -16,6 +16,16 @@ if str(CODE_ROOT) not in sys.path:
 
 from common.io_utils import load_json, read_jsonl, resolve_project_path  # noqa: E402
 from common.contracts import record_identity  # noqa: E402
+from common.skill_prediction import (  # noqa: E402
+    build_prediction_failure_records,
+    build_prediction_result_records,
+    evaluate_result_completion,
+    latest_prediction_raw_records,
+    merge_validation_issue_records,
+    parse_successful_prediction_records,
+    prediction_validation_issue_events,
+    unavailable_prediction_result,
+)
 from instance_discriminator.common import (  # noqa: E402
     InstanceDiscriminatorError,
     assert_sources_unchanged,
@@ -31,11 +41,13 @@ from instance_discriminator.diagnostics import (  # noqa: E402
     build_diagnostics,
     prepared_summary,
 )
-from instance_discriminator.online import parse_successful_raw_records  # noqa: E402
+from instance_discriminator.online import parse_terminal_raw_records  # noqa: E402
 from instance_discriminator.pipeline import (  # noqa: E402
     build_candidate_record,
     build_discriminator_prompt,
+    build_empty_selected_record,
     build_selected_record,
+    build_skill_prediction_prompt,
 )
 
 
@@ -98,7 +110,12 @@ def validate(config_path: Path, run_id: str) -> dict[str, Any]:
         _equal(manifest.get("status"), "partial", "prepared manifest status")
         _equal(
             manifest.get("stages"),
-            {"prepare": "completed", "discriminate": "pending", "diagnostics": "pending"},
+            {
+                "prepare": "completed",
+                "discriminate": "pending",
+                "predict_target_skills": "pending",
+                "diagnostics": "pending",
+            },
             "prepared stages",
         )
         _equal(summary, prepared_summary(len(expected_candidates)), "prepared summary")
@@ -109,6 +126,12 @@ def validate(config_path: Path, run_id: str) -> dict[str, Any]:
             paths.raw / "responses.jsonl",
             paths.parsed / "judgments.jsonl",
             paths.selected / "records.jsonl",
+            paths.prediction / "prompts.jsonl",
+            paths.prediction / "raw.jsonl",
+            paths.prediction / "records.jsonl",
+            paths.prediction / "failures.jsonl",
+            paths.prediction / "results.jsonl",
+            paths.audit / "validation_issues.jsonl",
             paths.audit / "manual_review.jsonl",
         ):
             if path.exists() and path.stat().st_size:
@@ -123,58 +146,175 @@ def validate(config_path: Path, run_id: str) -> dict[str, Any]:
             "network_called": False,
         }
 
-    if manifest.get("status") != "completed":
-        raise InstanceDiscriminatorError(
-            "A non-prepare partial online run cannot pass complete validation"
-        )
-    if set(manifest.get("stages", {}).values()) != {"completed"}:
-        raise InstanceDiscriminatorError("Every completed-run stage must be completed")
+    if manifest.get("status") not in {"completed", "partial"}:
+        raise InstanceDiscriminatorError("Online run must be completed or partial")
     latest_raw = latest_records(paths.raw / "responses.jsonl")
     expected_ids = {item["idx"] for item in expected_candidates}
     if set(latest_raw) != expected_ids or any(
-        item.get("status") != "complete" for item in latest_raw.values()
+        item.get("status") not in {"complete", "failed"}
+        for item in latest_raw.values()
     ):
         raise InstanceDiscriminatorError(
-            "Completed run needs one successful latest raw response per target"
+            "Completed run needs one terminal latest raw response per target"
         )
     prompts_by_idx = {item["idx"]: item for item in expected_prompts}
-    expected_parsed = parse_successful_raw_records(
+    expected_parsed, judgment_validation_events, judgment_blockers = parse_terminal_raw_records(
         expected_candidates,
         prompts_by_idx,
         latest_raw,
         chat_model=config["chat"]["model"],
-        max_reason_characters=config["chat"]["max_reason_characters"],
     )
     actual_parsed = read_jsonl(paths.parsed / "judgments.jsonl")
     _equal(actual_parsed, expected_parsed, "parsed judgments")
     parsed_by_idx = {item["idx"]: item for item in expected_parsed}
-    expected_selected = [
-        build_selected_record(
-            item,
-            parsed_by_idx[item["idx"]]["judgments"],
-            config["gate"],
-            config["chat"]["model"],
-        )
-        for item in expected_candidates
-    ]
+    expected_selected = []
+    for item in expected_candidates:
+        parsed_item = parsed_by_idx.get(item["idx"])
+        if parsed_item is None:
+            continue
+        if "exemplar_judgment_validation_failed" in parsed_item.get(
+            "review_reasons", []
+        ):
+            expected_selected.append(
+                build_empty_selected_record(item, config["chat"]["model"])
+            )
+        else:
+            expected_selected.append(
+                build_selected_record(
+                    item,
+                    parsed_item["judgments"],
+                    config["gate"],
+                    config["chat"]["model"],
+                )
+            )
     actual_selected = read_jsonl(paths.selected / "records.jsonl")
     _equal(actual_selected, expected_selected, "selected records")
+    expected_prediction_prompts = [
+        build_skill_prediction_prompt(
+            item, config["chat"]["max_prompt_characters"]
+        )
+        for item in expected_selected
+    ]
+    _equal(
+        read_jsonl(paths.prediction / "prompts.jsonl"),
+        expected_prediction_prompts,
+        "skill prediction prompts",
+    )
+    latest_prediction_raw = latest_prediction_raw_records(
+        paths.prediction / "raw.jsonl"
+    )
+    expected_prediction_ids = {item["idx"] for item in expected_prediction_prompts}
+    if set(latest_prediction_raw) != expected_prediction_ids or any(
+        item.get("status") not in {"complete", "failed"}
+        for item in latest_prediction_raw.values()
+    ):
+        raise InstanceDiscriminatorError(
+            "Completed run needs one terminal prediction per successful judgment"
+        )
+    expected_predictions = parse_successful_prediction_records(
+        expected_prediction_prompts,
+        latest_prediction_raw,
+        chat_model=config["chat"]["model"],
+        maximum_repairs=config["chat"]["prediction_repair_attempts"],
+    )
+    actual_predictions = read_jsonl(paths.prediction / "records.jsonl")
+    _equal(actual_predictions, expected_predictions, "skill predictions")
+    expected_prediction_failures = build_prediction_failure_records(
+        expected_prediction_prompts,
+        latest_prediction_raw,
+        maximum_repairs=config["chat"]["prediction_repair_attempts"],
+    )
+    _equal(
+        read_jsonl(paths.prediction / "failures.jsonl"),
+        expected_prediction_failures,
+        "skill prediction failures",
+    )
+    prompt_results = build_prediction_result_records(
+        expected_prediction_prompts,
+        actual_predictions,
+        expected_prediction_failures,
+        latest_prediction_raw,
+    )
+    prompt_results_by_idx = {item["idx"]: item for item in prompt_results}
+    results = []
+    for item in expected_candidates:
+        if item["idx"] in prompt_results_by_idx:
+            results.append(prompt_results_by_idx[item["idx"]])
+            continue
+        blocker = judgment_blockers.get(item["idx"])
+        results.append(
+            unavailable_prediction_result(
+                item,
+                branch="exemplar",
+                outcome="runtime_failed" if blocker else "missing",
+                failure_kind=(blocker or {}).get(
+                    "failure_kind", "missing_prediction_prompt"
+                ),
+                review_reasons=["exemplar_judgment_failed_or_missing"],
+                failure=blocker,
+            )
+        )
+    validation_issues = merge_validation_issue_records(
+        expected_candidates,
+        [
+            *judgment_validation_events,
+            *prediction_validation_issue_events(
+                prompt_results, stage="exemplar_skill_prediction"
+            ),
+        ],
+    )
+    _equal(read_jsonl(paths.prediction / "results.jsonl"), results, "prediction results")
+    _equal(
+        read_jsonl(paths.audit / "validation_issues.jsonl"),
+        validation_issues,
+        "validation issue ledger",
+    )
+    completion = evaluate_result_completion(
+        expected_count=len(expected_candidates),
+        results=results,
+        validation_issues=validation_issues,
+        maximum_failure_rate=config["completion"]["max_failure_rate"],
+    )
+    expected_status = "completed" if completion["within_tolerance"] else "partial"
+    _equal(manifest.get("status"), expected_status, "terminal run status")
+    expected_stage_status = "completed" if completion["within_tolerance"] else "partial"
+    _equal(
+        manifest.get("stages"),
+        {
+            "prepare": "completed",
+            "discriminate": expected_stage_status,
+            "predict_target_skills": expected_stage_status,
+            "diagnostics": expected_stage_status,
+        },
+        "terminal stages",
+    )
     expected_summary, expected_review = build_diagnostics(
         expected_candidates,
         expected_parsed,
         expected_selected,
         latest_raw,
         config["diagnostics"]["review_sample_size"],
+        actual_predictions,
+        latest_prediction_raw,
+        expected_prediction_failures,
+        results,
+        validation_issues,
+        completion,
     )
+    _equal(expected_summary.get("status"), "complete" if completion["within_tolerance"] else "partial", "summary status")
     _equal(summary, expected_summary, "summary")
     _equal(read_jsonl(paths.audit / "manual_review.jsonl"), expected_review, "review sample")
     _equal(manifest.get("summary"), expected_summary, "manifest summary")
     return {
         "run_id": run_id,
-        "status": "valid_completed",
+        "status": f"valid_{expected_status}",
         "targets": len(expected_candidates),
         "selected_total": expected_summary["selection"]["selected_total"],
         "needs_review": expected_summary["needs_review_count"],
+        "predictions": len(actual_predictions),
+        "allowed_failures": completion["maximum_failure_count"],
+        "failed_predictions": sum(item["prediction"] is None for item in results),
+        "predicted_spans": sum(len(item["spans"]) for item in actual_predictions),
         "accuracy_improvement": "not_evaluated",
     }
 

@@ -38,6 +38,14 @@ class InstanceDiscriminatorError(RuntimeError):
     """Raised whenever the discriminator must fail closed."""
 
 
+REPAIR_UPGRADE_ID = "structured-output-repair-v1"
+REPAIR_UPGRADE_FILES = {
+    "code/instance_discriminator/common.py",
+    "code/instance_discriminator/online.py",
+    "code/instance_discriminator/runner.py",
+}
+
+
 @dataclass(frozen=True)
 class DiscriminatorRunPaths:
     root: Path
@@ -47,6 +55,7 @@ class DiscriminatorRunPaths:
     raw: Path
     parsed: Path
     selected: Path
+    prediction: Path
     audit: Path
 
 
@@ -56,7 +65,7 @@ def load_discriminator_config(path: Path) -> dict[str, Any]:
         raise InstanceDiscriminatorError("config schema_version must equal 1")
     if config.get("module") != "instance_discriminator":
         raise InstanceDiscriminatorError("config module must equal instance_discriminator")
-    if config.get("pipeline_version") != "instance-discriminator-v1":
+    if config.get("pipeline_version") != "instance-discriminator-v5":
         raise InstanceDiscriminatorError("Unsupported discriminator pipeline_version")
     source = config.get("inputs", {})
     if source.get("candidate_count") != 16:
@@ -68,20 +77,27 @@ def load_discriminator_config(path: Path) -> dict[str, Any]:
         or chat.get("structured_output") is not True
         or chat.get("temperature") != 0.0
         or chat.get("max_retries") != 5
-        or chat.get("max_reason_characters") != 240
+        or "max_reason_characters" in chat
+        or chat.get("prediction_max_tokens") != 512
+        or chat.get("prediction_repair_attempts") != 2
     ):
         raise InstanceDiscriminatorError(
             "Discriminator chat must use fixed Qwen structured JSON at temperature 0"
         )
     gate = config.get("gate", {})
     if gate != {
-        "minimum_helpfulness": 4,
+        "minimum_helpfulness": 3,
         "max_selected": 8,
         "max_supporting": 6,
         "max_contrastive": 3,
         "minimum_for_complete": 2,
     }:
         raise InstanceDiscriminatorError("The v1 hard-gate contract has changed")
+    completion = config.get("completion", {})
+    if completion != {"max_failure_rate": 0.03}:
+        raise InstanceDiscriminatorError(
+            "completion.max_failure_rate must remain fixed at 0.03"
+        )
     review_size = config.get("diagnostics", {}).get("review_sample_size")
     if not isinstance(review_size, int) or review_size < 0:
         raise InstanceDiscriminatorError("review_sample_size must be non-negative")
@@ -105,6 +121,7 @@ def discriminator_run_paths(
         raw=root / "raw",
         parsed=root / "parsed",
         selected=root / "selected",
+        prediction=root / "prediction",
         audit=root / "audit",
     )
 
@@ -249,6 +266,7 @@ def implementation_hashes() -> dict[str, dict[str, Any]]:
     paths.extend(
         [
             PROJECT_ROOT / "code" / "common" / "qwen_client.py",
+            PROJECT_ROOT / "code" / "common" / "skill_prediction.py",
             PROJECT_ROOT / "scripts" / "instance_discriminator" / "run.ps1",
             PROJECT_ROOT / "environment.yml",
             PROJECT_ROOT / "pyproject.toml",
@@ -295,6 +313,7 @@ def initialize_or_resume_run(
     command: list[str],
     *,
     resume: bool,
+    allow_repair_upgrade: bool = False,
 ) -> DiscriminatorRunPaths:
     paths = discriminator_run_paths(config, run_id)
     compatibility = {
@@ -304,6 +323,7 @@ def initialize_or_resume_run(
         "targets": descriptor,
         "chat": config["chat"],
         "gate": config["gate"],
+        "completion": config["completion"],
     }
     current_implementation = implementation_hashes()
     if paths.root.exists():
@@ -317,7 +337,41 @@ def initialize_or_resume_run(
         if manifest.get("compatibility") != compatibility:
             raise InstanceDiscriminatorError("Resume compatibility mismatch")
         if manifest.get("implementation") != current_implementation:
-            raise InstanceDiscriminatorError("Implementation changed; use a new run-id")
+            previous = manifest.get("implementation")
+            changed = {
+                name
+                for name in set(previous or {}) | set(current_implementation)
+                if (previous or {}).get(name) != current_implementation.get(name)
+            }
+            upgrades = manifest.get("implementation_upgrades", [])
+            can_upgrade = (
+                allow_repair_upgrade
+                and manifest.get("status") == "partial"
+                and isinstance(previous, dict)
+                and isinstance(upgrades, list)
+                and not upgrades
+                and bool(changed)
+                and changed <= REPAIR_UPGRADE_FILES
+            )
+            if not can_upgrade:
+                raise InstanceDiscriminatorError(
+                    "Implementation changed; use a new run-id"
+                )
+            manifest["implementation_upgrades"] = [
+                {
+                    "id": REPAIR_UPGRADE_ID,
+                    "at": utc_now(),
+                    "reason": "bounded structured-output repair for failed records",
+                    "changed_files": {
+                        name: {
+                            "before": previous.get(name),
+                            "after": current_implementation.get(name),
+                        }
+                        for name in sorted(changed)
+                    },
+                }
+            ]
+            manifest["implementation"] = current_implementation
         manifest["commands"].append({"at": utc_now(), "argv": command})
         manifest.update({"status": "running", "completed_at": None, "error": None})
         atomic_write_json(paths.manifest, manifest)
@@ -331,6 +385,7 @@ def initialize_or_resume_run(
         paths.raw,
         paths.parsed,
         paths.selected,
+        paths.prediction,
         paths.audit,
     ):
         directory.mkdir()
@@ -344,6 +399,7 @@ def initialize_or_resume_run(
         "network_called": False,
         "compatibility": compatibility,
         "implementation": current_implementation,
+        "implementation_upgrades": [],
         "environment": {
             "python": platform.python_version(),
             "platform": platform.platform(),
@@ -353,6 +409,7 @@ def initialize_or_resume_run(
         "stages": {
             "prepare": "pending",
             "discriminate": "pending",
+            "predict_target_skills": "pending",
             "diagnostics": "pending",
         },
         "source_unchanged": None,

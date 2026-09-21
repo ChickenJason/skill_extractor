@@ -7,7 +7,6 @@ import random
 from collections import Counter
 from typing import Any
 
-
 def _rate(numerator: int, denominator: int) -> float | None:
     return round(numerator / denominator, 6) if denominator else None
 
@@ -35,6 +34,7 @@ def prepared_summary(target_count: int) -> dict[str, Any]:
         "candidate_record_count": target_count,
         "prompt_record_count": target_count,
         "online_discrimination_performed": False,
+        "target_skill_prediction_performed": False,
     }
 
 
@@ -44,14 +44,28 @@ def build_diagnostics(
     selected: list[dict[str, Any]],
     latest_raw: dict[int, dict[str, Any]],
     review_sample_size: int,
+    predictions: list[dict[str, Any]],
+    latest_prediction_raw: dict[int, dict[str, Any]],
+    prediction_failures: list[dict[str, Any]],
+    prediction_results: list[dict[str, Any]],
+    validation_issues: list[dict[str, Any]],
+    completion: dict[str, Any],
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     parsed_by_idx = {item["idx"]: item for item in parsed}
     selected_by_idx = {item["idx"]: item for item in selected}
+    predictions_by_idx = {item["idx"]: item for item in predictions}
+    results_by_idx = {item["idx"]: item for item in prediction_results}
     status_counts = Counter(item["status"] for item in selected)
+    judgment_validation_ids = {
+        item["idx"]
+        for item in validation_issues
+        if "exemplar_judgment" in item["stages"]
+    }
     failed_ids = [
         item["idx"]
         for item in targets
         if latest_raw.get(item["idx"], {}).get("status") == "failed"
+        and item["idx"] not in judgment_validation_ids
     ]
     pending_ids = [item["idx"] for item in targets if item["idx"] not in latest_raw]
     judgments = [
@@ -91,8 +105,14 @@ def build_diagnostics(
         )
         destination.extend(float(item["helpfulness_score"]) for item in parsed_item["judgments"])
     selected_counts = [item["selected_count"] for item in selected]
+    prediction_statuses = Counter(item["status"] for item in predictions)
+    prediction_failed_ids = [
+        item["idx"] for item in prediction_results if item["prediction"] is None
+    ]
+    prediction_pending_ids: list[int] = []
+    within_tolerance = completion["within_tolerance"]
     summary = {
-        "status": "complete" if len(selected) == len(targets) else "partial",
+        "status": "complete" if within_tolerance else "partial",
         "target_count": len(targets),
         "parsed_count": len(parsed),
         "selected_record_count": len(selected),
@@ -102,6 +122,34 @@ def build_diagnostics(
         "pending_count": len(pending_ids),
         "failed_indexes": failed_ids,
         "pending_indexes": pending_ids,
+        "validation_issue_count": len(validation_issues),
+        "validation_issue_indexes": [item["idx"] for item in validation_issues],
+        "failure_tolerance": completion,
+        "prediction": {
+            "record_count": len(predictions),
+            "complete_count": prediction_statuses["complete"],
+            "needs_review_count": prediction_statuses["needs_review"],
+            "positive_count": sum(item["has_skill"] == 1 for item in predictions),
+            "span_total": sum(len(item["spans"]) for item in predictions),
+            "failed_indexes": prediction_failed_ids,
+            "pending_indexes": prediction_pending_ids,
+            "failure_record_count": len(prediction_failures),
+            "result_count": len(prediction_results),
+            "outcomes": dict(
+                sorted(Counter(item["outcome"] for item in prediction_results).items())
+            ),
+            "repair_attempted_count": sum(
+                bool(item.get("repair")) for item in latest_prediction_raw.values()
+            ),
+            "repaired_count": sum(
+                item.get("status") == "complete" and bool(item.get("repair"))
+                for item in latest_prediction_raw.values()
+            ),
+            "recovered_count": sum(
+                item.get("status") == "complete" and bool(item.get("recovery"))
+                for item in latest_prediction_raw.values()
+            ),
+        },
         "judgment_count": len(judgments),
         "score_distribution": {str(i): scores[str(i)] for i in range(1, 6)},
         "role_distribution": {
@@ -144,17 +192,35 @@ def build_diagnostics(
         idx = target["idx"]
         chosen = selected_by_idx.get(idx)
         if chosen is not None:
+            prediction = predictions_by_idx.get(idx)
+            prediction_result = results_by_idx[idx]
+            prediction_raw = latest_prediction_raw.get(idx)
+            prediction_status = (
+                prediction["status"]
+                if prediction is not None
+                else prediction_raw.get("status", "pending")
+                if prediction_raw
+                else "pending"
+            )
+            review_reasons = list(chosen["review_reasons"])
+            if prediction is None:
+                review_reasons.append("prediction_failed_or_pending")
             review_pool.append(
                 {
                     "idx": idx,
                     "sentence": target["sentence"],
-                    "status": chosen["status"],
-                    "review_reasons": chosen["review_reasons"],
+                    "status": prediction_status,
+                    "review_reasons": review_reasons,
                     "target_evidence": chosen["target_evidence"],
                     "selected_count": chosen["selected_count"],
                     "selected_demo_ids": [
                         item["demo_idx"] for item in chosen["selected"]
                     ],
+                    "prediction": prediction,
+                    "prediction_result": prediction_result,
+                    "prediction_error": (
+                        prediction_raw.get("error") if prediction_raw else None
+                    ),
                 }
             )
         else:
@@ -169,6 +235,11 @@ def build_diagnostics(
                     "selected_count": 0,
                     "selected_demo_ids": [],
                     "error": raw.get("error") if raw else None,
+                    "prediction": predictions_by_idx.get(idx),
+                    "prediction_result": results_by_idx[idx],
+                    "prediction_error": (
+                        latest_prediction_raw.get(idx, {}).get("error")
+                    ),
                 }
             )
     priority = [item for item in review_pool if item["status"] != "complete"]

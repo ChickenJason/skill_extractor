@@ -1,0 +1,150 @@
+{
+  "schema_version": "bidirectional-interaction-gate-spec-v1",
+  "gate_id": "trf-exemplar-bidirectional-stratified12-v1",
+  "base_concurrent_run_id": "skill-concurrent-v1",
+  "underlying_protocol": "trf-exemplar-synchronous-v1",
+  "targets": [
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "13", "idx": 13,
+      "sentence": "Good team work and cooperation with your colleagues and daily leader 3F's union agreement with DMA",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 73, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "A close positive teamwork example should remain highly useful."},
+        {"demo_idx": 24, "minimum_score": 1, "maximum_score": 2, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The unrelated candidate should not survive the hard gate."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "17", "idx": 17,
+      "sentence": "You can read the Latin alphabet",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_mixed", "baseline_zero_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": ["tools", "independently", "basic", "years", "skills"]},
+      "exemplar_anchors": [
+        {"demo_idx": 177, "minimum_score": 3, "maximum_score": 5, "expected_role": "supporting", "expected_selected": null, "expected_change_from_baseline": null, "rationale": "A reading-related accepted example should provide positive evidence."},
+        {"demo_idx": 14, "minimum_score": 1, "maximum_score": 2, "expected_role": "contrastive", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The negative comparison should be low-utility contrast."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "50", "idx": 50,
+      "sentence": "It is expected that you are a super user of the MS office tools - especially Excel and PPT .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_mixed"],
+      "trf_anchors": {"must_keep": ["tools"], "must_drop": ["techniques", "independently", "basic", "years"]},
+      "exemplar_anchors": [
+        {"demo_idx": 176, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "Microsoft Office proficiency is directly transferable."},
+        {"demo_idx": 63, "minimum_score": 1, "maximum_score": 3, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": true, "rationale": "TRF evidence should remove the generic development negative from selection."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "85", "idx": 85,
+      "sentence": "Have good interpersonal and communication skills both in Danish and English; spoken as written",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_positive_only"],
+      "trf_anchors": {"must_keep": ["skills"], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 118, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "The positive communication example should be retained."},
+        {"demo_idx": 309, "minimum_score": 1, "maximum_score": 2, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The unrelated accepted example should not be selected."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "100", "idx": 100,
+      "sentence": "Your personal qualities include taking pride in your ability to work independently and seeing your duties through to the end .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": ["independently", "tools", "impact", "techniques", "years"]},
+      "exemplar_anchors": [
+        {"demo_idx": 84, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "The accepted work-style example remains strongly useful."},
+        {"demo_idx": 259, "minimum_score": 1, "maximum_score": 3, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": true, "rationale": "Weak generic similarity should be corrected by TRF-aware rejudgment."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "115", "idx": 115,
+      "sentence": "Product / Project Management skills",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_mixed", "baseline_zero_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 109, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": true, "rationale": "Project-management evidence should resolve the zero-selection baseline."},
+        {"demo_idx": 315, "minimum_score": 1, "maximum_score": 3, "expected_role": "contrastive", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The negative management context is low-utility contrast."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "139", "idx": 139,
+      "sentence": "A vacancy exists for a <PROFESSION> <PROFESSION> with strong Java skills and experience of working in the web layer working as a key member of an agile team .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_positive_only"],
+      "trf_anchors": {"must_keep": ["agile", "skills"], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 155, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "The technical accepted example should remain selected."},
+        {"demo_idx": 141, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": true, "rationale": "Explicit agile/skill TRFs should promote this useful example."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "147", "idx": 147,
+      "sentence": "Key responsibilities  Participation in the elaboration of user stories ( technical and functional) .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "trf_needs_review", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 141, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "User-story evidence is directly transferable."},
+        {"demo_idx": 148, "minimum_score": 4, "maximum_score": 5, "expected_role": "contrastive", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "A close negative boundary case should remain selected as contrast."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "180", "idx": 180,
+      "sentence": "Your key tasks will be to ensure data collection procedures for building analytic systems operationalise data mining and analysis into business applications maintain the productionised models .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_positive_only", "baseline_zero_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 179, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": true, "rationale": "Adjacent analytics evidence should resolve the baseline zero selection."},
+        {"demo_idx": 130, "minimum_score": 1, "maximum_score": 2, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The unrelated candidate should remain excluded."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "275", "idx": 275,
+      "sentence": "Your focus is to ensure reliable supply by operating in a structured formal monthly Sales and Operations Planning Process to maximize product availability .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "trf_needs_review", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 274, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "Planning-process evidence should remain selected."},
+        {"demo_idx": 125, "minimum_score": 1, "maximum_score": 2, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The weakly related candidate should be excluded."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "312", "idx": 312,
+      "sentence": "The team is very dynamic and we have a high pace in our normal work days .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["empty_baseline_trf_control", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 90, "minimum_score": 4, "maximum_score": 5, "expected_role": "contrastive", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "A close negative work-style boundary should be retained."},
+        {"demo_idx": 108, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "The accepted pace-related example should be retained."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "323", "idx": 323,
+      "sentence": "Qualifications within dairy production data modelling evaluation of feed quality and feed intake in dairy cattle and good knowledge of the Nordic feed evaluation system NorFor as well as DairyManagement System or similar systems are considered an advantage .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_positive_only", "baseline_one_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 324, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "The adjacent domain-system example should be retained."},
+        {"demo_idx": 69, "minimum_score": 1, "maximum_score": 2, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The unrelated example should remain excluded."}
+      ]
+    }
+  ],
+  "acceptance": {
+    "target_count": 12,
+    "required_exemplar_anchors": 24,
+    "required_keep_anchors": 4,
+    "required_drop_anchors": 14,
+    "minimum_changed_exemplar_anchors": 5,
+    "maximum_model_responses": 60,
+    "maximum_repair_responses": 12,
+    "required_failed_records": 0
+  }
+}

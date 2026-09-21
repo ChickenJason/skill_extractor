@@ -48,6 +48,7 @@ class TargetRunPaths:
     prompts: Path
     raw: Path
     parsed: Path
+    prediction: Path
     audit: Path
 
 
@@ -62,7 +63,7 @@ def load_target_config(path: Path) -> dict[str, Any]:
         config = root_config
     if config.get("schema_version") != 1:
         raise TargetTRFError("TRF target schema_version must equal 1")
-    if config.get("pipeline_version") != "trf-target-extractor-v1":
+    if config.get("pipeline_version") != "trf-target-extractor-v4":
         raise TargetTRFError("Unsupported target TRF pipeline_version")
     if config.get("configuration_role") not in {
         "module-template",
@@ -127,6 +128,9 @@ def load_target_config(path: Path) -> dict[str, Any]:
         or chat.get("temperature") != 0.0
         or chat.get("structured_output") is not True
         or chat.get("max_retries") != 5
+        or chat.get("stage3_max_tokens") != 512
+        or chat.get("prediction_repair_attempts") != 2
+        or chat.get("prediction_max_failure_rate") != 0.03
     ):
         raise TargetTRFError("Target TRF chat must use temperature=0 and structured JSON")
     if config.get("diagnostics", {}).get("review_sample_size") != 20:
@@ -149,6 +153,7 @@ def target_run_paths(config: dict[str, Any], run_id: str) -> TargetRunPaths:
         prompts=root / "prompts",
         raw=root / "raw",
         parsed=root / "parsed",
+        prediction=root / "prediction",
         audit=root / "audit",
     )
 
@@ -255,6 +260,7 @@ def implementation_hashes() -> dict[str, dict[str, Any]]:
     paths.extend(
         [
             PROJECT_ROOT / "code" / "common" / "qwen_client.py",
+            PROJECT_ROOT / "code" / "common" / "skill_prediction.py",
             PROJECT_ROOT / "scripts" / "trf" / "run.ps1",
             PROJECT_ROOT / "environment.yml",
             PROJECT_ROOT / "pyproject.toml",
@@ -348,6 +354,7 @@ def initialize_or_resume_run(
         paths.prompts,
         paths.raw,
         paths.parsed,
+        paths.prediction,
         paths.audit,
     ):
         directory.mkdir()
@@ -371,6 +378,7 @@ def initialize_or_resume_run(
             "prepare_targets": "pending",
             "embed_and_retrieve": "pending",
             "extract_target_trfs": "pending",
+            "predict_target_skills": "pending",
             "diagnostics": "pending",
         },
         "source_unchanged": None,

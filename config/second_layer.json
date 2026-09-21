@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "module": "second_layer",
+  "pipeline_version": "second-layer-parallel-v1",
+  "children": {
+    "trf_config": "config/trf.json",
+    "instance_discriminator_config": "config/instance_discriminator.json"
+  },
+  "output": {
+    "runs_root": "output/second_layer"
+  }
+}

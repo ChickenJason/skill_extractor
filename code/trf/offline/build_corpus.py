@@ -196,7 +196,7 @@ def build_manual_review_sample(corpus: list[dict[str, Any]]) -> list[dict[str, A
         for record in corpus
         if record["status"] == "accepted"
         and any(span["accepted_by"] == "family_hard_match" for span in record["skill_spans"])
-    ][:5]
+    ][:4]
     hard_ids = {record["idx"] for record in hard}
     exact = [
         record
@@ -204,10 +204,10 @@ def build_manual_review_sample(corpus: list[dict[str, Any]]) -> list[dict[str, A
         if record["status"] == "accepted"
         and record["idx"] not in hard_ids
         and all(span["accepted_by"] == "exact_vote" for span in record["skill_spans"])
-    ][:10]
+    ][:11]
     negative = [record for record in corpus if record["status"] == "negative"][:5]
-    if len(exact) != 10 or len(hard) != 5 or len(negative) != 5:
-        raise TRFError("Cannot construct the fixed 10/5/5 manual review sample")
+    if len(exact) != 11 or len(hard) != 4 or len(negative) != 5:
+        raise TRFError("Cannot construct the fixed 11/4/5 manual review sample")
     sample: list[dict[str, Any]] = []
     for category, records in (
         ("exact_accepted", exact),

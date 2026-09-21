@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "contract_id": "trf-addition-semantics-v1",
+  "definition": "A TRF is type-related evidence associated with a Skill entity. For reflector additions, it must be either a domain/tool/technology feature or an explicit lexical cue that signals a skill type; it is not the Skill span itself.",
+  "allowed_addition_classes": {
+    "domain_feature": "A domain, technology, system, tool, method family, or technical context that is evidence for the type of a possible Skill entity.",
+    "skill_type_cue": "An explicit lexical cue such as skill, proficiency, competence, or experience that signals the presence or type of a Skill entity without being that entity."
+  },
+  "excluded_classes": {
+    "quality_or_trait": "A desired quality, value, stance, or personal/organizational trait rather than type evidence.",
+    "descriptive_modifier": "An adjective or descriptive phrase that only qualifies how an action or outcome should be performed.",
+    "task_or_object": "A task, activity, deliverable, process instance, or object of work rather than type evidence.",
+    "skill_span_or_paraphrase": "The target Skill entity itself or a renamed/paraphrased version of it."
+  },
+  "human_labeled_examples": [
+    {
+      "text": "patient-centred",
+      "semantic_class": "quality_or_trait",
+      "is_trf": false,
+      "rationale": "This expresses a quality or orientation, not type-related evidence for a Skill entity."
+    },
+    {
+      "text": "inclusive",
+      "semantic_class": "quality_or_trait",
+      "is_trf": false,
+      "rationale": "This is a quality and is not itself a Skill or a TRF."
+    },
+    {
+      "text": "safe and effective",
+      "semantic_class": "descriptive_modifier",
+      "is_trf": false,
+      "rationale": "This phrase descriptively modifies an action or outcome rather than supplying type evidence."
+    },
+    {
+      "text": "course of treatment",
+      "semantic_class": "task_or_object",
+      "is_trf": false,
+      "rationale": "This is an object or task context, not a type-related feature."
+    },
+    {
+      "text": "IT systems",
+      "semantic_class": "domain_feature",
+      "is_trf": true,
+      "rationale": "This is a valid domain/technology feature associated with a possible Skill entity."
+    }
+  ]
+}

@@ -1,18 +1,22 @@
 # Skill Sentence Processor
 
-本项目包含三个并列的业务模块。它们共享 `code/common/` 中的 I/O、哈希、Qwen 客户端和数据合同，但业务包之间不互相 import，也没有固定的跨模块执行顺序。
+本项目包含三个底层业务模块和一个最终聚合器。它们共享 `code/common/` 中的 I/O、哈希、Qwen 客户端和数据合同；业务包之间不互相 import，聚合器只读取第二层发布的中立文件。
 
 | 模块 | 主要职责 | 配置 | 正式入口 | 输出根目录 |
 |---|---|---|---|---|
 | `self_annotator` | 对句子进行五次独立自我标注，解析 Skill 字符跨度并聚合共识 | `config/self_annotator.json` | `scripts/self_annotator/run.ps1` | `output/self_annotator/<run-id>/` |
-| `trf` | 构建离线 TRF、为目标句检索候选实例并提取开放 TRF | `config/trf.json` | `scripts/trf/run.ps1` | `output/trf/<run-id>/` |
-| `instance_discriminator` | 对显式传入的候选实例逐个评分、分配角色并执行确定性硬门控 | `config/instance_discriminator.json` | `scripts/instance_discriminator/run.ps1` | `output/instance_discriminator/<run-id>/` |
+| `trf` | 构建离线 TRF、提取目标开放 TRF，并据此预测目标 Skill 精确跨度 | `config/trf.json` | `scripts/trf/run.ps1` | `output/trf/<run-id>/` |
+| `instance_discriminator` | 对候选实例评分并做 Eligible 筛选，再据保留示例预测目标 Skill 精确跨度 | `config/instance_discriminator.json` | `scripts/instance_discriminator/run.ps1` | `output/instance_discriminator/<run-id>/` |
+| `aggregator` | 以相同 pipeline 运行证据版和专家结果版，发布最终 Skill 精确跨度 | `config/aggregator.json` | `scripts/aggregator/run.ps1` | `output/aggregator/<run-id>/` |
 
-三个模块的详细说明分别位于：
+各模块的详细说明分别位于：
 
 - [自我标注器](code/self_annotator/README.md)
 - [TRF](code/trf/README.md)
 - [实例判别器](code/instance_discriminator/README.md)
+- [最终聚合器](code/aggregator/README.md)
+
+此外，[第二层并行调度](code/second_layer/README.md)可在不改变底层业务模块的前提下，冻结 TRF 检索结果，并行运行 TRF 与不含目标 Features 的示例判别器，最终生成供聚合器读取的上下文包。
 
 ## 环境
 
@@ -85,6 +89,44 @@ TRF 可额外接收中立反馈文件；当前版本只校验并锁定它，不�
 ```
 
 若不传 `-Features`，判别器只使用目标文本以及候选实例中的文本、跨度和可靠度信息；manifest 会记录 `feature_context: absent`，不会伪造 TRF。
+
+两个模块分别在自己的 `prediction/records.jsonl` 发布目标原句坐标下的 `skill-prediction-v1`，并在 `prediction/results.jsonl` 为每个目标发布 `skill-prediction-result-v1`。预测严格使用 `<skill>` 内联标签还原 end-exclusive 字符跨度；非法结构最多进行两次受约束修复。修复耗尽后，安全的一对一 CP1252 异常标点归一化仍可投影回原句；其他结构可解析的输出以 `model_sentence` 坐标作为 provisional 结果进入下游，不会伪装成正式目标坐标。TRF v4 和示例判别器 v5 将各自所有模型阶段的终态校验问题按目标去重：比例不超过 3% 时运行完成，超过 3% 时标记 `partial`。网络、缺失响应、运行时和完整性错误不使用该额度。
+
+并行运行第二层（示例判别器固定不接收 Features）：
+
+```powershell
+.\scripts\second_layer\run.ps1 `
+  -RunId synthetic100-layer2-v1 `
+  -TargetMode independent `
+  -Input .\data\raw\synthetic_jd_sentences_100.json `
+  -Limit 3 `
+  -AllowNetwork `
+  -PythonExecutable .\.venv-trf\Scripts\python.exe
+```
+
+父运行位于 `output/second_layer/synthetic100-layer2-v1/`，两个子运行分别为 `synthetic100-layer2-v1-trf` 和 `synthetic100-layer2-v1-examples`。只有两个子 validator 均通过时，才会发布 `context/records.jsonl`；它提供双专家上下文，但不生成最终技能跨度预测。
+
+最终聚合器提供严格匹配的两种模式。证据版禁止传入专家路径；专家结果版优先读取两路 `prediction/results.jsonl`，并兼容旧的 `skill-prediction-v1`：
+
+```powershell
+.\scripts\aggregator\run.ps1 `
+  -Mode EvidenceOnly `
+  -RunId synthetic100-agg-evidence-v1 `
+  -ContextManifest .\output\second_layer\synthetic100-layer2-v1\manifest.json `
+  -ContextRecords .\output\second_layer\synthetic100-layer2-v1\context\records.jsonl `
+  -PrepareOnly
+
+.\scripts\aggregator\run.ps1 `
+  -Mode WithExpertResults `
+  -RunId synthetic100-agg-experts-v1 `
+  -ContextManifest .\output\second_layer\synthetic100-layer2-v1\manifest.json `
+  -ContextRecords .\output\second_layer\synthetic100-layer2-v1\context\records.jsonl `
+  -TrfPredictions <trf-prediction-results> `
+  -ExemplarPredictions <exemplar-prediction-results> `
+  -PrepareOnly
+```
+
+确认 `inputs/records.jsonl` 与 `prompts/records.jsonl` 后，用同一个 run-id 加 `-Resume -AllowNetwork -ConfirmFullRun` 继续。两个版本的 Gold 对比只通过 `scripts/aggregator/evaluate.ps1` 离线执行，Gold 不进入运行输入或 Prompt。
 
 ## 中立数据合同
 

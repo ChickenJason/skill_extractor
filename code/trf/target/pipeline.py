@@ -17,6 +17,10 @@ if str(CODE_ROOT) not in sys.path:
 
 from common.contracts import record_identity  # noqa: E402
 from common.io_utils import load_json, read_jsonl, sha256_json  # noqa: E402
+from common.skill_prediction import (  # noqa: E402
+    PROMPT_SCHEMA,
+    SKILL_SPAN_INSTRUCTION,
+)
 from trf.target.common import TargetTRFError, source_paths  # noqa: E402
 
 
@@ -414,6 +418,63 @@ def build_parsed_record(
         "retrieval_count": 16,
         "review_reasons": review_reasons,
         "models": {"embedding": embedding_model, "chat": chat_model},
+    }
+
+
+def build_skill_prediction_prompt(
+    target: dict[str, Any], feature: dict[str, Any], max_characters: int
+) -> dict[str, Any]:
+    """Build the isolated TRF-expert target-span prompt without demonstration labels."""
+
+    if (
+        record_identity(target, "target") != record_identity(feature, "feature")
+        or target.get("source_sha256") != feature.get("source_sha256")
+        or target.get("sentence") != feature.get("sentence")
+    ):
+        raise TargetTRFError("Target and parsed TRF feature do not align")
+    trfs = [item["normalized_text"] for item in feature["trfs"]]
+    reasons = list(feature.get("review_reasons", []))
+    if not feature["entity_types"]:
+        reasons.append("no_entity_type")
+    if not trfs:
+        reasons.append("no_trfs")
+    reasons = list(dict.fromkeys(reasons))
+    evidence = {"entity_types": list(feature["entity_types"]), "trfs": trfs}
+    system = (
+        "You are the TRF expert's final exact Skill span extractor. Use the inferred "
+        "type-related features only as evidence; never output a feature unless it is an "
+        "explicit exact span in the target sentence.\n\n"
+        + SKILL_SPAN_INSTRUCTION
+    )
+    user = json.dumps(
+        {
+            "target_sentence": target["sentence"],
+            "inferred_trfs": trfs,
+            "required_output": {"annotated_sentence": "target sentence with optional tags"},
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+    character_count = sum(len(item["content"]) for item in messages)
+    if character_count > max_characters:
+        raise TargetTRFError(
+            f"TRF skill prediction prompt for idx={target['idx']} exceeds "
+            "max_prompt_characters"
+        )
+    return {
+        "schema_version": PROMPT_SCHEMA,
+        "branch": "trf",
+        "dataset_id": target["dataset_id"],
+        "record_id": target["record_id"],
+        "source_sha256": target["source_sha256"],
+        "idx": target["idx"],
+        "sentence": target["sentence"],
+        "messages": messages,
+        "prompt_sha256": sha256_json(messages),
+        "character_count": character_count,
+        "review_reasons": reasons,
+        "evidence": evidence,
     }
 
 

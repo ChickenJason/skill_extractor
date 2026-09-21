@@ -1,0 +1,41 @@
+{
+  "schema_version": "bidirectional-interaction-gate-spec-v1",
+  "gate_id": "trf-exemplar-bidirectional-smoke-lite-v1",
+  "base_concurrent_run_id": "skill-concurrent-v1",
+  "underlying_protocol": "trf-exemplar-synchronous-v1",
+  "targets": [
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "50",
+      "idx": 50,
+      "sentence": "It is expected that you are a super user of the MS office tools - especially Excel and PPT .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": []
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "312",
+      "idx": 312,
+      "sentence": "The team is very dynamic and we have a high pace in our normal work days .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["empty_baseline_trf_control", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": []
+    }
+  ],
+  "acceptance": {
+    "target_count": 2,
+    "required_exemplar_anchors": 0,
+    "required_keep_anchors": 0,
+    "required_drop_anchors": 0,
+    "minimum_changed_exemplar_anchors": 0,
+    "maximum_model_responses": 6,
+    "maximum_repair_responses": 2,
+    "required_failed_records": 0,
+    "required_ready_targets": 2,
+    "minimum_targets_with_active_trf": 1,
+    "minimum_targets_with_selected_exemplar": 1
+  }
+}

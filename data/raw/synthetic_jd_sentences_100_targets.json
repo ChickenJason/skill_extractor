@@ -1,0 +1,402 @@
+[
+    {
+        "idx":  10001,
+        "sentence":  "You will analyze sales data with SQL and build interactive dashboards in Tableau ."
+    },
+    {
+        "idx":  10002,
+        "sentence":  "The role requires Python programming and experience developing machine learning models with scikit-learn ."
+    },
+    {
+        "idx":  10003,
+        "sentence":  "You will design REST APIs and implement backend services using FastAPI ."
+    },
+    {
+        "idx":  10004,
+        "sentence":  "Maintain CI/CD pipelines and deploy containerized applications with Docker and Kubernetes ."
+    },
+    {
+        "idx":  10005,
+        "sentence":  "Prepare financial forecasts and perform variance analysis using advanced Excel ."
+    },
+    {
+        "idx":  10006,
+        "sentence":  "Support the monthly close process and prepare financial statements in accordance with IFRS ."
+    },
+    {
+        "idx":  10007,
+        "sentence":  "Develop demand forecasts and optimize inventory levels across regional distribution centers ."
+    },
+    {
+        "idx":  10008,
+        "sentence":  "Configure purchasing workflows and maintain master data in SAP S/4HANA ."
+    },
+    {
+        "idx":  10009,
+        "sentence":  "You will negotiate supplier contracts and manage long-term supplier relationships ."
+    },
+    {
+        "idx":  10010,
+        "sentence":  "Operate a forklift safely and process warehouse orders with handheld barcode scanners ."
+    },
+    {
+        "idx":  10011,
+        "sentence":  "Maintain GMP documentation and coordinate corrective and preventive actions through the CAPA system ."
+    },
+    {
+        "idx":  10012,
+        "sentence":  "Perform analytical testing using HPLC and gas chromatography ."
+    },
+    {
+        "idx":  10013,
+        "sentence":  "Conduct PCR amplification gel electrophoresis and DNA purification for routine laboratory studies ."
+    },
+    {
+        "idx":  10014,
+        "sentence":  "Prepare biological samples for fluorescence microscopy and complete quantitative image analysis ."
+    },
+    {
+        "idx":  10015,
+        "sentence":  "Coordinate clinical trial protocols and ensure study activities comply with Good Clinical Practice ."
+    },
+    {
+        "idx":  10016,
+        "sentence":  "Complete patient assessments and develop individualized care plans with the multidisciplinary team ."
+    },
+    {
+        "idx":  10017,
+        "sentence":  "Create detailed mechanical drawings and three-dimensional assemblies in SolidWorks ."
+    },
+    {
+        "idx":  10018,
+        "sentence":  "Set up CNC machines and write CNC programs for precision metal components ."
+    },
+    {
+        "idx":  10019,
+        "sentence":  "Troubleshoot PLC control systems and modify programs in Siemens TIA Portal ."
+    },
+    {
+        "idx":  10020,
+        "sentence":  "Plan preventive maintenance and diagnose faults in automated production equipment ."
+    },
+    {
+        "idx":  10021,
+        "sentence":  "Conduct renewable energy feasibility studies and map project constraints with GIS ."
+    },
+    {
+        "idx":  10022,
+        "sentence":  "Perform power flow analysis and short-circuit studies using ETAP ."
+    },
+    {
+        "idx":  10023,
+        "sentence":  "Provision cloud infrastructure on AWS and manage infrastructure as code with Terraform ."
+    },
+    {
+        "idx":  10024,
+        "sentence":  "Investigate cybersecurity incidents and monitor security events through a SIEM platform ."
+    },
+    {
+        "idx":  10025,
+        "sentence":  "Conduct vulnerability assessments and penetration testing for customer-facing applications ."
+    },
+    {
+        "idx":  10026,
+        "sentence":  "Administer Linux servers and automate recurring tasks with shell scripting ."
+    },
+    {
+        "idx":  10027,
+        "sentence":  "Develop scalable microservices in Java using the Spring Boot framework ."
+    },
+    {
+        "idx":  10028,
+        "sentence":  "Build accessible user interfaces with React and TypeScript ."
+    },
+    {
+        "idx":  10029,
+        "sentence":  "Develop and maintain iOS applications using Swift and Xcode ."
+    },
+    {
+        "idx":  10030,
+        "sentence":  "Create native Android features in Kotlin and publish releases through Google Play Console ."
+    },
+    {
+        "idx":  10031,
+        "sentence":  "Write unit and integration tests in pytest and investigate failed automated test runs ."
+    },
+    {
+        "idx":  10032,
+        "sentence":  "Manage source code with Git and track software defects in Jira ."
+    },
+    {
+        "idx":  10033,
+        "sentence":  "Develop natural language processing pipelines and fine-tune transformer models ."
+    },
+    {
+        "idx":  10034,
+        "sentence":  "Train computer vision models in PyTorch for industrial defect detection ."
+    },
+    {
+        "idx":  10035,
+        "sentence":  "Design A/B tests and apply causal inference methods to evaluate product changes ."
+    },
+    {
+        "idx":  10036,
+        "sentence":  "Plan controlled experiments and perform statistical analysis of research data ."
+    },
+    {
+        "idx":  10037,
+        "sentence":  "Write technical reports and prepare publication-ready documents in LaTeX ."
+    },
+    {
+        "idx":  10038,
+        "sentence":  "Conduct systematic literature reviews using Scopus and Web of Science ."
+    },
+    {
+        "idx":  10039,
+        "sentence":  "Develop grant proposals and coordinate submissions to external funding bodies ."
+    },
+    {
+        "idx":  10040,
+        "sentence":  "Deliver university teaching and design curricula for undergraduate business courses ."
+    },
+    {
+        "idx":  10041,
+        "sentence":  "Professional proficiency in written and spoken English and Danish is required ."
+    },
+    {
+        "idx":  10042,
+        "sentence":  "Present complex findings to large audiences and facilitate question-and-answer sessions ."
+    },
+    {
+        "idx":  10043,
+        "sentence":  "Facilitate stakeholder workshops and translate business needs into system requirements ."
+    },
+    {
+        "idx":  10044,
+        "sentence":  "Lead Scrum ceremonies and coach delivery teams in agile ways of working ."
+    },
+    {
+        "idx":  10045,
+        "sentence":  "Build project schedules in Microsoft Project and monitor milestones against the approved baseline ."
+    },
+    {
+        "idx":  10046,
+        "sentence":  "Maintain the project risk register and develop mitigation plans with workstream owners ."
+    },
+    {
+        "idx":  10047,
+        "sentence":  "Conduct user interviews and create interactive prototypes in Figma ."
+    },
+    {
+        "idx":  10048,
+        "sentence":  "Optimize website content for search engines and analyze traffic in Google Analytics ."
+    },
+    {
+        "idx":  10049,
+        "sentence":  "Edit digital content and publish multilingual pages through a content management system ."
+    },
+    {
+        "idx":  10050,
+        "sentence":  "Maintain sales opportunities and produce pipeline reports in Salesforce CRM ."
+    },
+    {
+        "idx":  10051,
+        "sentence":  "Resolve customer support tickets and maintain service records in Zendesk ."
+    },
+    {
+        "idx":  10052,
+        "sentence":  "Use conflict resolution and de-escalation techniques when handling difficult customer conversations ."
+    },
+    {
+        "idx":  10053,
+        "sentence":  "Apply HACCP procedures and maintain accurate food safety records ."
+    },
+    {
+        "idx":  10054,
+        "sentence":  "Prepare dishes in a commercial kitchen using safe knife techniques and portion control ."
+    },
+    {
+        "idx":  10055,
+        "sentence":  "Prepare espresso-based beverages and calibrate commercial coffee grinders ."
+    },
+    {
+        "idx":  10056,
+        "sentence":  "Drive a delivery vehicle and complete daily vehicle safety inspections ."
+    },
+    {
+        "idx":  10057,
+        "sentence":  "Plan efficient delivery routes and navigate with GPS mapping tools ."
+    },
+    {
+        "idx":  10058,
+        "sentence":  "Provide first aid and perform CPR during workplace emergencies ."
+    },
+    {
+        "idx":  10059,
+        "sentence":  "Plan age-appropriate activities and follow child safeguarding procedures ."
+    },
+    {
+        "idx":  10060,
+        "sentence":  "Develop lesson plans and apply classroom management techniques in a multilingual classroom ."
+    },
+    {
+        "idx":  10061,
+        "sentence":  "Maintain the general ledger and reconcile bank accounts in QuickBooks ."
+    },
+    {
+        "idx":  10062,
+        "sentence":  "Process monthly payroll and apply current payroll tax regulations ."
+    },
+    {
+        "idx":  10063,
+        "sentence":  "Conduct data protection impact assessments and advise teams on GDPR compliance ."
+    },
+    {
+        "idx":  10064,
+        "sentence":  "Perform legal research and draft commercial contract clauses ."
+    },
+    {
+        "idx":  10065,
+        "sentence":  "Evaluate procurement tenders and prepare evidence-based supplier recommendations ."
+    },
+    {
+        "idx":  10066,
+        "sentence":  "Plan internal quality audits and assess processes against ISO 9001 requirements ."
+    },
+    {
+        "idx":  10067,
+        "sentence":  "Apply Lean Six Sigma methods and create process maps for operational improvement projects ."
+    },
+    {
+        "idx":  10068,
+        "sentence":  "Lead root cause analysis and document corrective actions using the 8D methodology ."
+    },
+    {
+        "idx":  10069,
+        "sentence":  "Prepare international shipping documents and arrange freight bookings under Incoterms ."
+    },
+    {
+        "idx":  10070,
+        "sentence":  "Coordinate the monthly sales and operations planning process and balance supply with demand ."
+    },
+    {
+        "idx":  10071,
+        "sentence":  "Perform marine welding and inspect completed welds for visible defects ."
+    },
+    {
+        "idx":  10072,
+        "sentence":  "Read electrical schematics and diagnose circuits with a digital multimeter ."
+    },
+    {
+        "idx":  10073,
+        "sentence":  "Prepare models for 3D printing and configure print settings in slicing software ."
+    },
+    {
+        "idx":  10074,
+        "sentence":  "Record and mix multitrack audio sessions using Pro Tools ."
+    },
+    {
+        "idx":  10075,
+        "sentence":  "Create brand assets with Adobe Illustrator and retouch images in Adobe Photoshop ."
+    },
+    {
+        "idx":  10076,
+        "sentence":  "Edit promotional videos in Adobe Premiere Pro and create motion graphics in After Effects ."
+    },
+    {
+        "idx":  10077,
+        "sentence":  "Photograph corporate events and process RAW images in Lightroom ."
+    },
+    {
+        "idx":  10078,
+        "sentence":  "Plan social media campaigns and evaluate engagement metrics across digital channels ."
+    },
+    {
+        "idx":  10079,
+        "sentence":  "Coordinate event logistics manage vendor contracts and control event budgets ."
+    },
+    {
+        "idx":  10080,
+        "sentence":  "Maintain donor records and prepare fundraising reports using a donor management database ."
+    },
+    {
+        "idx":  10081,
+        "sentence":  "You are reliable punctual and committed to delivering high-quality work ."
+    },
+    {
+        "idx":  10082,
+        "sentence":  "The successful candidate must be available for evening and weekend shifts ."
+    },
+    {
+        "idx":  10083,
+        "sentence":  "Applicants must hold a valid permit to work in \u003cLOCATION\u003e ."
+    },
+    {
+        "idx":  10084,
+        "sentence":  "A relevant bachelor\u0027s degree or equivalent qualification is required ."
+    },
+    {
+        "idx":  10085,
+        "sentence":  "The position is based at our central office three days each week ."
+    },
+    {
+        "idx":  10086,
+        "sentence":  "You should be willing to travel internationally up to twenty percent of the year ."
+    },
+    {
+        "idx":  10087,
+        "sentence":  "The work requires standing for long periods and lifting packages weighing up to twenty kilograms ."
+    },
+    {
+        "idx":  10088,
+        "sentence":  "We value a positive attitude curiosity and respect for colleagues ."
+    },
+    {
+        "idx":  10089,
+        "sentence":  "You enjoy a busy environment and remain motivated when priorities change ."
+    },
+    {
+        "idx":  10090,
+        "sentence":  "The preferred start date is the first Monday of next month ."
+    },
+    {
+        "idx":  10091,
+        "sentence":  "Employment is subject to a satisfactory background check ."
+    },
+    {
+        "idx":  10092,
+        "sentence":  "You take pride in helping customers and representing the company professionally ."
+    },
+    {
+        "idx":  10093,
+        "sentence":  "We are looking for someone who enjoys learning and welcomes new challenges ."
+    },
+    {
+        "idx":  10094,
+        "sentence":  "The role offers considerable autonomy and regular contact with colleagues across the organization ."
+    },
+    {
+        "idx":  10095,
+        "sentence":  "The compensation package includes a pension contribution and private health insurance ."
+    },
+    {
+        "idx":  10096,
+        "sentence":  "You will join a friendly team that celebrates shared achievements ."
+    },
+    {
+        "idx":  10097,
+        "sentence":  "This outdoor position continues in most weather conditions throughout the year ."
+    },
+    {
+        "idx":  10098,
+        "sentence":  "A clean driving record is required before employment can begin ."
+    },
+    {
+        "idx":  10099,
+        "sentence":  "Candidates must live within reasonable commuting distance of the workplace ."
+    },
+    {
+        "idx":  10100,
+        "sentence":  "We welcome applications from all qualified candidates regardless of background ."
+    }
+]

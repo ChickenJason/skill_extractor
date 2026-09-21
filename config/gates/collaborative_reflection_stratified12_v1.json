@@ -1,0 +1,149 @@
+{
+  "schema_version": "collaborative-reflection-stratified-gate-spec-v1",
+  "gate_id": "nonempty-trf-keep-drop-candidates-review-stratified12-v1",
+  "base_concurrent_run_id": "skill-concurrent-v1",
+  "underlying_protocol": "collaborative-reflection-json-schema-v2",
+  "maximum_targets": 16,
+  "targets": [
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "13",
+      "idx": 13,
+      "sentence": "Good team work and cooperation with your colleagues and daily leader 3F's union agreement with DMA",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "anchor_rationale": "No automatic semantic gold; review both inferred TRFs manually."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "17",
+      "idx": 17,
+      "sentence": "You can read the Latin alphabet",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_mixed", "baseline_zero_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": ["tools", "independently", "basic", "years", "skills"]},
+      "anchor_rationale": "The five generic baseline TRFs are not grounded type evidence for reading the Latin alphabet."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "50",
+      "idx": 50,
+      "sentence": "It is expected that you are a super user of the MS office tools - especially Excel and PPT .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_mixed"],
+      "trf_anchors": {"must_keep": ["tools"], "must_drop": ["techniques", "independently", "basic", "years"]},
+      "anchor_rationale": "Tools is explicit domain/tool evidence; the other generic TRFs are not grounded in the target."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "85",
+      "idx": 85,
+      "sentence": "Have good interpersonal and communication skills both in Danish and English; spoken as written",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_positive_only"],
+      "trf_anchors": {"must_keep": ["skills"], "must_drop": []},
+      "anchor_rationale": "Skills is an explicit lexical skill-type cue."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "100",
+      "idx": 100,
+      "sentence": "Your personal qualities include taking pride in your ability to work independently and seeing your duties through to the end .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": ["independently", "tools", "impact", "techniques", "years"]},
+      "anchor_rationale": "Independently belongs to the work-style expression; the remaining generic TRFs lack target evidence."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "115",
+      "idx": 115,
+      "sentence": "Product / Project Management skills",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_mixed", "baseline_zero_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "anchor_rationale": "The product/project/management boundary is intentionally reserved for manual review."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "139",
+      "idx": 139,
+      "sentence": "A vacancy exists for a <PROFESSION> <PROFESSION> with strong Java skills and experience of working in the web layer working as a key member of an agile team .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_positive_only"],
+      "trf_anchors": {"must_keep": ["agile", "skills"], "must_drop": []},
+      "anchor_rationale": "Agile is explicit method context and skills is an explicit lexical cue."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "147",
+      "idx": 147,
+      "sentence": "Key responsibilities \u0095 Participation in the elaboration of user stories ( technical and functional) .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "trf_needs_review", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "anchor_rationale": "The technical/user-story relation remains a manual-review boundary case."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "180",
+      "idx": 180,
+      "sentence": "Your key tasks will be to ensure data collection procedures for building analytic systems operationalise data mining and analysis into business applications maintain the productionised models .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_positive_only", "baseline_zero_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "anchor_rationale": "Data-mining type evidence and generic baseline terms are reserved for manual review."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "275",
+      "idx": 275,
+      "sentence": "Your focus is to ensure reliable supply by operating in a structured formal monthly Sales and Operations Planning Process to maximize product availability .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "trf_needs_review", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "anchor_rationale": "Process and product may be domain evidence or task/object expressions and remain manual-review items."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "312",
+      "idx": 312,
+      "sentence": "The team is very dynamic and we have a high pace in our normal work days .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["empty_baseline_trf_control", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "anchor_rationale": "Empty-TRF control with negative-heavy candidates."
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1",
+      "record_id": "323",
+      "idx": 323,
+      "sentence": "Qualifications within dairy production data modelling evaluation of feed quality and feed intake in dairy cattle and good knowledge of the Nordic feed evaluation system NorFor as well as DairyManagement System or similar systems are considered an advantage .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_positive_only", "baseline_one_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "anchor_rationale": "Domain-system and management boundaries are reserved for manual review."
+    }
+  ],
+  "acceptance": {
+    "target_count": 12,
+    "minimum_strata_counts": {
+      "nonempty_baseline_trf": 11,
+      "trf_needs_review": 2,
+      "exemplar_needs_review": 4,
+      "candidate_positive_only": 4,
+      "candidate_negative_heavy": 3,
+      "candidate_mixed": 8,
+      "baseline_zero_selected": 3,
+      "baseline_one_selected": 1,
+      "empty_baseline_trf_control": 1
+    },
+    "required_keep_anchors": 4,
+    "required_drop_anchors": 14,
+    "required_wrapper_repairs": 0,
+    "maximum_total_repairs": 6,
+    "maximum_model_calls": 30,
+    "required_failed_records": 0
+  }
+}

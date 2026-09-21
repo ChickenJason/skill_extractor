@@ -297,21 +297,82 @@ def run_two_turn_extraction(
     return latest
 
 
-def parse_successful_raw_records(
+def parse_terminal_raw_records(
     targets: list[dict[str, Any]],
     latest_raw: dict[int, dict[str, Any]],
     main_bank: list[str],
     embedding_model: str,
     chat_model: str,
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[int, dict[str, Any]]]:
+    """Rebuild extraction contexts, retaining terminal validation failures as empty context."""
+
     parsed: list[dict[str, Any]] = []
+    validation_events: list[dict[str, Any]] = []
+    blockers: dict[int, dict[str, Any]] = {}
     for target in targets:
-        record = latest_raw.get(target["idx"])
-        if not record or record.get("status") not in {"complete", "needs_review"}:
+        idx = target["idx"]
+        record = latest_raw.get(idx)
+        if record is None:
+            blockers[idx] = {"failure_kind": "missing_raw", "error": None}
             continue
-        entity_types = parse_entity_types(record["stage1"]["content"])
-        trfs = parse_target_trfs(record["stage2"]["content"], target["sentence"], main_bank)
-        parsed.append(
-            build_parsed_record(target, entity_types, trfs, embedding_model, chat_model)
+        if record.get("schema_version") != "trf-raw-response-v1":
+            raise TargetTRFError(f"Unsupported extraction raw schema for idx={idx}")
+        for key in ("dataset_id", "record_id", "source_sha256", "idx"):
+            if record.get(key) != target.get(key):
+                raise TargetTRFError(f"Extraction raw {key} mismatch for idx={idx}")
+        if record.get("sentence_sha256") != sentence_hash(target["sentence"]):
+            raise TargetTRFError(f"Extraction raw sentence hash mismatch for idx={idx}")
+        if record.get("model") != chat_model:
+            raise TargetTRFError(f"Extraction raw model mismatch for idx={idx}")
+        status = record.get("status")
+        if status in {"complete", "needs_review"}:
+            stage1, stage2 = record.get("stage1"), record.get("stage2")
+            if not isinstance(stage1, dict) or not isinstance(stage2, dict):
+                raise TargetTRFError(f"Completed extraction response is missing for idx={idx}")
+            entity_types = parse_entity_types(stage1.get("content", ""))
+            trfs = parse_target_trfs(stage2.get("content", ""), target["sentence"], main_bank)
+            parsed.append(
+                build_parsed_record(target, entity_types, trfs, embedding_model, chat_model)
+            )
+            continue
+        if status != "failed":
+            raise TargetTRFError(f"Invalid extraction status for idx={idx}")
+        error = record.get("error")
+        is_validation = (
+            isinstance(error, dict)
+            and error.get("type") == "TargetTRFError"
+            and (isinstance(record.get("stage1"), dict) or isinstance(record.get("stage2"), dict))
         )
-    return parsed
+        if not is_validation:
+            blockers[idx] = {
+                "failure_kind": "provider_or_runtime_failure",
+                "error": error,
+            }
+            continue
+        placeholder = build_parsed_record(target, [], [], embedding_model, chat_model)
+        placeholder["status"] = "needs_review"
+        placeholder["review_reasons"] = ["trf_extraction_validation_failed"]
+        parsed.append(placeholder)
+        validation_events.append(
+            {
+                "dataset_id": target["dataset_id"],
+                "record_id": target["record_id"],
+                "source_sha256": target["source_sha256"],
+                "idx": idx,
+                "sentence": target["sentence"],
+                "stage": "trf_extraction",
+                "outcome": "validation_failed",
+                "coordinate_space": None,
+                "retained": True,
+                "model_output": {
+                    "stage1": record.get("stage1", {}).get("content")
+                    if isinstance(record.get("stage1"), dict)
+                    else None,
+                    "stage2": record.get("stage2", {}).get("content")
+                    if isinstance(record.get("stage2"), dict)
+                    else None,
+                },
+                "validation_error": error,
+            }
+        )
+    return parsed, validation_events, blockers

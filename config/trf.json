@@ -45,7 +45,7 @@
   },
   "target": {
     "schema_version": 1,
-    "pipeline_version": "trf-target-extractor-v1",
+    "pipeline_version": "trf-target-extractor-v4",
     "configuration_role": "module-template",
     "targets": {
       "independent_input": "data/raw/synthetic_jd_sentences_100.json"
@@ -75,6 +75,9 @@
       "temperature": 0.0,
       "stage1_max_tokens": 128,
       "stage2_max_tokens": 512,
+      "stage3_max_tokens": 512,
+      "prediction_repair_attempts": 2,
+      "prediction_max_failure_rate": 0.03,
       "timeout_seconds": 120,
       "max_retries": 5,
       "max_prompt_characters": 60000

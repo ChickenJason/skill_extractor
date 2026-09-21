@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "module": "instance_discriminator",
-  "pipeline_version": "instance-discriminator-v1",
+  "pipeline_version": "instance-discriminator-v5",
   "inputs": {
     "candidate_count": 16
   },
@@ -16,17 +16,21 @@
     "structured_output": true,
     "temperature": 0.0,
     "max_tokens": 4096,
+    "prediction_max_tokens": 512,
+    "prediction_repair_attempts": 2,
     "timeout_seconds": 120,
     "max_retries": 5,
-    "max_prompt_characters": 60000,
-    "max_reason_characters": 240
+    "max_prompt_characters": 60000
   },
   "gate": {
-    "minimum_helpfulness": 4,
+    "minimum_helpfulness": 3,
     "max_selected": 8,
     "max_supporting": 6,
     "max_contrastive": 3,
     "minimum_for_complete": 2
+  },
+  "completion": {
+    "max_failure_rate": 0.03
   },
   "diagnostics": {
     "review_sample_size": 20

@@ -31,7 +31,11 @@ from trf.offline.assign_pseudo_trfs import (  # noqa: E402
     rank_nearest_candidates,
     resolve_model_snapshot,
 )
-from trf.offline.build_corpus import build_corpus_records, validate_span  # noqa: E402
+from trf.offline.build_corpus import (  # noqa: E402
+    build_corpus_records,
+    build_manual_review_sample,
+    validate_span,
+)
 from trf.offline.extract_candidates import (  # noqa: E402
     _class_tokens,
     binary_mutual_information,
@@ -137,6 +141,43 @@ class TRFCorpusTests(unittest.TestCase):
         bad = {**good, "end": 21}
         with self.assertRaises(TRFError):
             validate_span(1, sentence, bad)
+
+    def test_manual_review_sample_uses_fixed_11_4_5_split(self) -> None:
+        corpus = [
+            {
+                "idx": idx,
+                "status": "accepted",
+                "skill_spans": [{"accepted_by": "exact_vote"}],
+            }
+            for idx in range(11)
+        ]
+        corpus.extend(
+            {
+                "idx": idx,
+                "status": "accepted",
+                "skill_spans": [{"accepted_by": "family_hard_match"}],
+            }
+            for idx in range(11, 15)
+        )
+        corpus.extend(
+            {"idx": idx, "status": "negative", "skill_spans": []}
+            for idx in range(15, 20)
+        )
+
+        sample = build_manual_review_sample(corpus)
+
+        self.assertEqual(len(sample), 20)
+        self.assertEqual(
+            [item["review_category"] for item in sample].count("exact_accepted"),
+            11,
+        )
+        self.assertEqual(
+            [item["review_category"] for item in sample].count("hard_match_accepted"),
+            4,
+        )
+        self.assertEqual(
+            [item["review_category"] for item in sample].count("negative"), 5
+        )
 
 
 class TRFTokenizerAndStatisticsTests(unittest.TestCase):

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "module": "second_layer_reflection",
+  "pipeline_version": "collaborative-reflection-context-v1",
+  "base": {
+    "concurrent_config": "config/second_layer.json",
+    "accepted_pipeline_versions": [
+      "second-layer-parallel-v1"
+    ],
+    "expected_target_count": 326
+  },
+  "provider": {
+    "name": "aliyun-model-studio",
+    "api_key": "${DASHSCOPE_API_KEY}",
+    "base_url": "${DASHSCOPE_BASE_URL}"
+  },
+  "chat": {
+    "model": "qwen3.7-plus-2026-05-26",
+    "enable_thinking": false,
+    "structured_output": true,
+    "temperature": 0.0,
+    "max_tokens": 4096,
+    "timeout_seconds": 120,
+    "max_retries": 5,
+    "max_prompt_characters": 60000,
+    "max_reason_characters": 240
+  },
+  "gate": {
+    "minimum_helpfulness": 3,
+    "max_selected": 8,
+    "max_supporting": 6,
+    "max_contrastive": 3,
+    "minimum_for_complete": 2
+  },
+  "reflection": {
+    "candidate_count": 16,
+    "max_repair_attempts": 2
+  },
+  "diagnostics": {
+    "review_sample_size": 20
+  },
+  "output": {
+    "runs_root": "output/second_layer"
+  }
+}

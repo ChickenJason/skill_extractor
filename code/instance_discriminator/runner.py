@@ -25,6 +25,17 @@ from common.io_utils import (  # noqa: E402
 )
 from common.contracts import record_identity  # noqa: E402
 from common.qwen_client import QwenClient, QwenRequestError, QwenSettings  # noqa: E402
+from common.skill_prediction import (  # noqa: E402
+    SkillPredictionNetworkRequired,
+    build_prediction_failure_records,
+    build_prediction_result_records,
+    evaluate_result_completion,
+    merge_validation_issue_records,
+    parse_successful_prediction_records,
+    prediction_validation_issue_events,
+    run_skill_predictions,
+    unavailable_prediction_result,
+)
 from instance_discriminator.common import (  # noqa: E402
     DiscriminatorRunPaths,
     InstanceDiscriminatorError,
@@ -44,13 +55,15 @@ from instance_discriminator.diagnostics import (  # noqa: E402
 )
 from instance_discriminator.online import (  # noqa: E402
     NetworkRequiredError,
-    parse_successful_raw_records,
+    parse_terminal_raw_records,
     run_judgments,
 )
 from instance_discriminator.pipeline import (  # noqa: E402
     build_candidate_record,
     build_discriminator_prompt,
+    build_empty_selected_record,
     build_selected_record,
+    build_skill_prediction_prompt,
 )
 
 
@@ -119,7 +132,12 @@ def _write_terminal_manifest(
 def _recoverable(error: Exception) -> bool:
     return isinstance(
         error,
-        (NetworkRequiredError, MissingEnvironmentVariable, QwenRequestError),
+        (
+            NetworkRequiredError,
+            SkillPredictionNetworkRequired,
+            MissingEnvironmentVariable,
+            QwenRequestError,
+        ),
     )
 
 
@@ -153,6 +171,7 @@ def run(
         descriptor,
         list(sys.argv),
         resume=args.resume,
+        allow_repair_upgrade=args.retry_failed,
     )
     source_snapshot = load_json(paths.root / "source_snapshot.json")
     secret_values: list[str] = []
@@ -162,6 +181,12 @@ def run(
     raw_path = paths.raw / "responses.jsonl"
     parsed_path = paths.parsed / "judgments.jsonl"
     selected_path = paths.selected / "records.jsonl"
+    prediction_prompt_path = paths.prediction / "prompts.jsonl"
+    prediction_raw_path = paths.prediction / "raw.jsonl"
+    prediction_path = paths.prediction / "records.jsonl"
+    prediction_failure_path = paths.prediction / "failures.jsonl"
+    prediction_results_path = paths.prediction / "results.jsonl"
+    validation_issues_path = paths.audit / "validation_issues.jsonl"
     summary_path = paths.audit / "summary.json"
     review_path = paths.audit / "manual_review.jsonl"
 
@@ -188,6 +213,7 @@ def run(
             summary = prepared_summary(len(candidate_records))
             atomic_write_json(summary_path, summary)
             update_stage(paths, "discriminate", "pending")
+            update_stage(paths, "predict_target_skills", "pending")
             update_stage(paths, "diagnostics", "pending")
             _write_terminal_manifest(
                 paths,
@@ -205,44 +231,144 @@ def run(
             chat_model=config["chat"]["model"],
             temperature=config["chat"]["temperature"],
             max_tokens=config["chat"]["max_tokens"],
-            max_reason_characters=config["chat"]["max_reason_characters"],
             allow_network=args.allow_network,
             retry_failed=args.retry_failed,
             client_factory=provider_factory,
             secrets=secret_values,
             on_network_call=lambda: _set_network_called(paths),
         )
-        parsed_records = parse_successful_raw_records(
+        parsed_records, judgment_validation_events, judgment_blockers = parse_terminal_raw_records(
             candidate_records,
             prompts_by_idx,
             latest_raw,
             chat_model=config["chat"]["model"],
-            max_reason_characters=config["chat"]["max_reason_characters"],
         )
         parsed_by_idx = {item["idx"]: item for item in parsed_records}
-        selected_records = [
-            build_selected_record(
-                item,
-                parsed_by_idx[item["idx"]]["judgments"],
-                config["gate"],
-                config["chat"]["model"],
-            )
-            for item in candidate_records
-            if item["idx"] in parsed_by_idx
-        ]
+        selected_records = []
+        for item in candidate_records:
+            parsed_item = parsed_by_idx.get(item["idx"])
+            if parsed_item is None:
+                continue
+            if "exemplar_judgment_validation_failed" in parsed_item.get(
+                "review_reasons", []
+            ):
+                selected_records.append(
+                    build_empty_selected_record(item, config["chat"]["model"])
+                )
+            else:
+                selected_records.append(
+                    build_selected_record(
+                        item,
+                        parsed_item["judgments"],
+                        config["gate"],
+                        config["chat"]["model"],
+                    )
+                )
         atomic_write_jsonl(parsed_path, parsed_records)
         atomic_write_jsonl(selected_path, selected_records)
-        complete = len(selected_records) == len(candidate_records)
-        update_stage(paths, "discriminate", "completed" if complete else "partial")
+        prediction_prompts = [
+            build_skill_prediction_prompt(
+                item, config["chat"]["max_prompt_characters"]
+            )
+            for item in selected_records
+        ]
+        atomic_write_jsonl(prediction_prompt_path, prediction_prompts)
+        latest_prediction_raw = run_skill_predictions(
+            prediction_prompts,
+            prediction_raw_path,
+            chat_model=config["chat"]["model"],
+            temperature=config["chat"]["temperature"],
+            max_tokens=config["chat"]["prediction_max_tokens"],
+            maximum_repairs=config["chat"]["prediction_repair_attempts"],
+            allow_network=args.allow_network,
+            retry_failed=args.retry_failed,
+            client_factory=provider_factory,
+            secrets=secret_values,
+            on_network_call=lambda: _set_network_called(paths),
+        )
+        predictions = parse_successful_prediction_records(
+            prediction_prompts,
+            latest_prediction_raw,
+            chat_model=config["chat"]["model"],
+            maximum_repairs=config["chat"]["prediction_repair_attempts"],
+        )
+        atomic_write_jsonl(prediction_path, predictions)
+        prediction_failures = build_prediction_failure_records(
+            prediction_prompts,
+            latest_prediction_raw,
+            maximum_repairs=config["chat"]["prediction_repair_attempts"],
+        )
+        atomic_write_jsonl(prediction_failure_path, prediction_failures)
+        prompt_results = build_prediction_result_records(
+            prediction_prompts,
+            predictions,
+            prediction_failures,
+            latest_prediction_raw,
+        )
+        prompt_results_by_idx = {item["idx"]: item for item in prompt_results}
+        results = []
+        for item in candidate_records:
+            if item["idx"] in prompt_results_by_idx:
+                results.append(prompt_results_by_idx[item["idx"]])
+                continue
+            blocker = judgment_blockers.get(item["idx"])
+            results.append(
+                unavailable_prediction_result(
+                    item,
+                    branch="exemplar",
+                    outcome="runtime_failed" if blocker else "missing",
+                    failure_kind=(blocker or {}).get(
+                        "failure_kind", "missing_prediction_prompt"
+                    ),
+                    review_reasons=["exemplar_judgment_failed_or_missing"],
+                    failure=blocker,
+                )
+            )
+        validation_issues = merge_validation_issue_records(
+            candidate_records,
+            [
+                *judgment_validation_events,
+                *prediction_validation_issue_events(
+                    prompt_results, stage="exemplar_skill_prediction"
+                ),
+            ],
+        )
+        atomic_write_jsonl(prediction_results_path, results)
+        atomic_write_jsonl(validation_issues_path, validation_issues)
+        completion = evaluate_result_completion(
+            expected_count=len(candidate_records),
+            results=results,
+            validation_issues=validation_issues,
+            maximum_failure_rate=config["completion"]["max_failure_rate"],
+        )
+        discriminate_complete = not judgment_blockers and completion["within_tolerance"]
+        update_stage(
+            paths,
+            "discriminate",
+            "completed" if discriminate_complete else "partial",
+        )
+        prediction_complete = completion["within_tolerance"]
+        update_stage(
+            paths,
+            "predict_target_skills",
+            "completed" if prediction_complete else "partial",
+        )
         summary, review = build_diagnostics(
             candidate_records,
             parsed_records,
             selected_records,
             latest_raw,
             config["diagnostics"]["review_sample_size"],
+            predictions,
+            latest_prediction_raw,
+            prediction_failures,
+            results,
+            validation_issues,
+            completion,
         )
         atomic_write_json(summary_path, summary)
         atomic_write_jsonl(review_path, review)
+        complete = discriminate_complete and prediction_complete
         update_stage(paths, "diagnostics", "completed" if complete else "partial")
         final_status = "completed" if complete else "partial"
         _write_terminal_manifest(

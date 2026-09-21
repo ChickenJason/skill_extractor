@@ -36,6 +36,7 @@ from instance_discriminator.pipeline import (  # noqa: E402
     build_candidate_record,
     build_discriminator_prompt,
     build_selected_record,
+    build_skill_prediction_prompt,
     parse_judgments,
 )
 
@@ -119,8 +120,13 @@ def _retrieval(target: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _prepare_workspace(root: Path) -> tuple[Path, Path, Path, Path]:
-    targets = [_target(1001), _target(1002, review=True)]
+def _prepare_workspace(
+    root: Path, target_count: int = 2
+) -> tuple[Path, Path, Path, Path]:
+    targets = [
+        _target(1001 + offset, review=offset == 1)
+        for offset in range(target_count)
+    ]
     target_records = [
         {
             "schema_version": "sentence-record-v1",
@@ -147,10 +153,24 @@ def _prepare_workspace(root: Path) -> tuple[Path, Path, Path, Path]:
 
 
 class FakeDiscriminatorClient:
-    def __init__(self, fail_once: set[int] | None = None) -> None:
+    def __init__(
+        self,
+        fail_once: set[int] | None = None,
+        fail_always: set[int] | None = None,
+        invalid_role_once: set[int] | None = None,
+        prediction_invalid_once: set[int] | None = None,
+        prediction_fail_always: set[int] | None = None,
+    ) -> None:
         self.fail_once = set(fail_once or set())
+        self.fail_always = set(fail_always or set())
+        self.invalid_role_once = set(invalid_role_once or set())
+        self.prediction_invalid_once = set(prediction_invalid_once or set())
+        self.prediction_fail_always = set(prediction_fail_always or set())
         self.failed: set[int] = set()
+        self.role_failed: set[int] = set()
         self.calls: list[int] = []
+        self.prediction_failed: set[int] = set()
+        self.prediction_calls: list[int] = []
 
     def chat(
         self,
@@ -160,10 +180,39 @@ class FakeDiscriminatorClient:
         max_tokens: int,
         model: str,
     ) -> dict[str, Any]:
+        if "exemplar expert's final exact Skill span extractor" in messages[0]["content"]:
+            payload = json.loads(messages[1]["content"])
+            sentence = payload["target_sentence"]
+            idx = int(sentence.split("TARGET-ID:", 1)[1].split()[0])
+            self.prediction_calls.append(idx)
+            if idx in self.prediction_fail_always:
+                content = "invalid-json"
+            elif (
+                idx in self.prediction_invalid_once
+                and idx not in self.prediction_failed
+            ):
+                self.prediction_failed.add(idx)
+                content = "invalid-json"
+            else:
+                annotated = sentence.replace(
+                    "transferable skill", "<skill>transferable skill</skill>"
+                )
+                content = json.dumps({"annotated_sentence": annotated})
+            return {
+                "content": content,
+                "finish_reason": "stop",
+                "latency_ms": 0,
+                "attempts": 1,
+                "response_id": f"fake-prediction-{len(self.prediction_calls)}",
+                "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+            }
+
         payload = json.loads(messages[1]["content"])["input"]
         idx = int(payload["target"]["sentence"].split("TARGET-ID:", 1)[1].split()[0])
         self.calls.append(idx)
-        if idx in self.fail_once and idx not in self.failed:
+        if idx in self.fail_always:
+            content = "invalid-json"
+        elif idx in self.fail_once and idx not in self.failed:
             self.failed.add(idx)
             content = "invalid-json"
         else:
@@ -185,9 +234,16 @@ class FakeDiscriminatorClient:
                         "reason_codes": [
                             "BOUNDARY_TRANSFERABLE" if accepted else "NEGATIVE_CONTRAST"
                         ],
-                        "reason": "Deterministic fake judgment.",
                     }
                 )
+            if idx in self.invalid_role_once and idx not in self.role_failed:
+                self.role_failed.add(idx)
+                accepted = next(
+                    item
+                    for item, demo in zip(judgments, payload["demonstrations"])
+                    if demo["status"] == "accepted"
+                )
+                accepted["role"] = "contrastive"
             content = json.dumps({"judgments": judgments})
         return {
             "content": content,
@@ -241,7 +297,6 @@ class InstanceDiscriminatorTests(unittest.TestCase):
                     if item["status"] == "accepted"
                     else "NEGATIVE_CONTRAST"
                 ],
-                "reason": "Useful exact-boundary evidence.",
             }
             for item in record["candidates"]
         ]
@@ -284,6 +339,45 @@ class InstanceDiscriminatorTests(unittest.TestCase):
         serialized_target = json.dumps(payload["target"])
         for forbidden in ("decision", "status", "spans", "has_skill"):
             self.assertNotIn(forbidden, serialized_target)
+
+        selected = build_selected_record(
+            record, self._judgments(record), _base_config()["gate"], CHAT_MODEL
+        )
+        prediction_prompt = build_skill_prediction_prompt(selected, 60000)
+        prediction_payload = json.loads(
+            prediction_prompt["messages"][1]["content"]
+        )
+        self.assertEqual(
+            set(prediction_payload),
+            {"target_sentence", "selected_examples", "required_output"},
+        )
+        self.assertEqual(
+            set(prediction_payload["selected_examples"][0]),
+            {"demo_idx", "sentence", "skill_spans", "helpfulness_score", "role"},
+        )
+        serialized_prediction = json.dumps(prediction_payload)
+        for forbidden in ("pseudo_trfs", "similarity", "existence_score", "target_trfs"):
+            self.assertNotIn(forbidden, serialized_prediction)
+
+    def test_zero_and_one_selected_examples_still_build_prediction_prompts(self) -> None:
+        record = self._candidate_record()
+        zero = build_selected_record(
+            record, self._judgments(record, score=2), _base_config()["gate"], CHAT_MODEL
+        )
+        zero_prompt = build_skill_prediction_prompt(zero, 60000)
+        zero_payload = json.loads(zero_prompt["messages"][1]["content"])
+        self.assertEqual(zero_payload["selected_examples"], [])
+        self.assertIn("no_helpful_examples", zero_prompt["review_reasons"])
+
+        judgments = self._judgments(record, score=2)
+        judgments[0]["helpfulness_score"] = 5
+        one = build_selected_record(
+            record, judgments, _base_config()["gate"], CHAT_MODEL
+        )
+        one_prompt = build_skill_prediction_prompt(one, 60000)
+        one_payload = json.loads(one_prompt["messages"][1]["content"])
+        self.assertEqual(len(one_payload["selected_examples"]), 1)
+        self.assertIn("insufficient_helpful_examples", one_prompt["review_reasons"])
 
     def test_same_numeric_idx_in_different_datasets_is_not_self_leakage(self) -> None:
         target = {
@@ -328,7 +422,7 @@ class InstanceDiscriminatorTests(unittest.TestCase):
                 set(payload["target"]), {"sentence", "feature_context"}
             )
 
-    def test_strict_parser_enforces_ids_types_roles_codes_and_reason_length(self) -> None:
+    def test_strict_parser_enforces_ids_types_roles_codes_and_forbids_reason(self) -> None:
         record = self._candidate_record()
         good = self._judgments(record)
         parsed = parse_judgments(json.dumps({"judgments": good}), record["candidates"])
@@ -351,18 +445,28 @@ class InstanceDiscriminatorTests(unittest.TestCase):
         wrong_code = json.loads(json.dumps(good))
         wrong_code[0]["reason_codes"] = ["UNKNOWN"]
         mutations.append(wrong_code)
-        long_reason = json.loads(json.dumps(good))
-        long_reason[0]["reason"] = "x" * 241
-        mutations.append(long_reason)
+        unexpected_reason = json.loads(json.dumps(good))
+        unexpected_reason[0]["reason"] = "The model must not emit prose reasons."
+        mutations.append(unexpected_reason)
         for value in mutations:
             with self.subTest(value=value[0]), self.assertRaises(InstanceDiscriminatorError):
                 parse_judgments(json.dumps({"judgments": value}), record["candidates"])
         self.assertIn("TRF_ALIGNED", REASON_CODES)
 
+    def test_discriminator_prompt_never_requests_free_text_reason(self) -> None:
+        prompt = build_discriminator_prompt(self._candidate_record(), 60000)
+        payload = json.loads(prompt["messages"][1]["content"])
+        judgment = payload["required_output"]["judgments"][0]
+        self.assertEqual(
+            set(judgment),
+            {"demo_idx", "helpfulness_score", "role", "reason_codes"},
+        )
+        self.assertNotIn('"reason"', prompt["messages"][1]["content"])
+
     def test_hard_gate_never_backfills_low_scores_and_accepts_negative_contrast(self) -> None:
         record = self._candidate_record()
         judgments = self._judgments(record, score=2)
-        judgments[1]["helpfulness_score"] = 5
+        judgments[1]["helpfulness_score"] = 4
         gate = _base_config()["gate"]
         result = apply_hard_gate(record["candidates"], judgments, gate)
         self.assertEqual([item["demo_idx"] for item in result["selected"]], [2])
@@ -375,16 +479,26 @@ class InstanceDiscriminatorTests(unittest.TestCase):
         self.assertEqual(selected["selected_count"], 0)
         self.assertEqual(selected["review_reasons"], ["no_helpful_examples"])
 
-    def test_hard_gate_sorting_and_caps_are_deterministic(self) -> None:
+    def test_hard_gate_only_filters_eligible_and_preserves_input_order(self) -> None:
         record = self._candidate_record()
         judgments = self._judgments(record)
+        judgments[0]["helpfulness_score"] = 4
         result = apply_hard_gate(record["candidates"], judgments, _base_config()["gate"])
-        self.assertEqual(len(result["selected"]), 8)
-        self.assertLessEqual(result["role_counts"]["supporting"], 6)
-        self.assertLessEqual(result["role_counts"]["contrastive"], 3)
         self.assertEqual(
             [item["demo_idx"] for item in result["selected"]],
-            [1, 2, 3, 4, 5, 6, 7, 9],
+            [item["demo_idx"] for item in record["candidates"]],
+        )
+        self.assertEqual(
+            [item["gate_rank"] for item in result["selected"]],
+            list(range(1, 17)),
+        )
+        self.assertEqual(result["eligible_count"], 16)
+        self.assertEqual(
+            result["role_counts"],
+            {
+                role: sum(item["role"] == role for item in judgments)
+                for role in ("supporting", "contrastive")
+            },
         )
 
     def test_upstream_review_and_empty_skill_trf_reasons_are_preserved(self) -> None:
@@ -432,26 +546,52 @@ class InstanceDiscriminatorTests(unittest.TestCase):
             args = self._args(config_path, targets, candidates, features)
             self.assertEqual(run(args, client_factory=lambda: client), "completed")
             self.assertEqual(client.calls, [1001, 1002])
+            self.assertEqual(client.prediction_calls, [1001, 1002])
             result = validate(config_path, "test-run")
             self.assertEqual(result["status"], "valid_completed")
             selected = read_jsonl(
                 root / "discriminator-runs" / "test-run" / "selected" / "records.jsonl"
             )
-            # The first eight fake positives contain four negatives; the
-            # max_contrastive=3 cap intentionally leaves seven selected.
-            self.assertEqual([item["selected_count"] for item in selected], [7, 7])
+            # All eight eligible candidates remain in their original input order.
+            self.assertEqual([item["selected_count"] for item in selected], [8, 8])
             self.assertEqual(selected[1]["status"], "needs_review")
+            predictions = read_jsonl(
+                root
+                / "discriminator-runs"
+                / "test-run"
+                / "prediction"
+                / "records.jsonl"
+            )
+            self.assertEqual([item["has_skill"] for item in predictions], [1, 1])
+            self.assertEqual(predictions[0]["spans"][0]["text"], "transferable skill")
 
-    def test_partial_resume_and_retry_failed_are_explicit(self) -> None:
+    def test_prediction_invalid_output_is_repaired_and_audited(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             config_path, targets, candidates, features = _prepare_workspace(root)
-            client = FakeDiscriminatorClient(fail_once={1001})
+            client = FakeDiscriminatorClient(prediction_invalid_once={1001})
+            args = self._args(config_path, targets, candidates, features)
+            self.assertEqual(run(args, client_factory=lambda: client), "completed")
+            self.assertEqual(client.prediction_calls, [1001, 1001, 1002])
+            raw = read_jsonl(
+                root
+                / "discriminator-runs"
+                / "test-run"
+                / "prediction"
+                / "raw.jsonl"
+            )
+            self.assertEqual(len(raw[0]["repair"]["attempts"]), 2)
+            self.assertEqual(validate(config_path, "test-run")["status"], "valid_completed")
+
+    def test_failed_prediction_resume_does_not_repeat_discrimination(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path, targets, candidates, features = _prepare_workspace(root)
+            client = FakeDiscriminatorClient(prediction_fail_always={1001})
             args = self._args(config_path, targets, candidates, features)
             self.assertEqual(run(args, client_factory=lambda: client), "partial")
             self.assertEqual(client.calls, [1001, 1002])
-            raw_path = root / "discriminator-runs" / "test-run" / "raw" / "responses.jsonl"
-            self.assertEqual(len(read_jsonl(raw_path)), 2)
+            self.assertEqual(client.prediction_calls, [1001, 1001, 1001, 1002])
 
             no_retry = self._args(
                 config_path,
@@ -464,7 +604,143 @@ class InstanceDiscriminatorTests(unittest.TestCase):
             )
             self.assertEqual(run(no_retry, client_factory=lambda: client), "partial")
             self.assertEqual(client.calls, [1001, 1002])
+            self.assertEqual(client.prediction_calls, [1001, 1001, 1001, 1002])
+
+            client.prediction_fail_always.clear()
+            retry = self._args(
+                config_path,
+                targets,
+                candidates,
+                features,
+                resume=True,
+                retry_failed=True,
+            )
+            self.assertEqual(run(retry, client_factory=lambda: client), "completed")
+            self.assertEqual(client.calls, [1001, 1002])
+            self.assertEqual(
+                client.prediction_calls, [1001, 1001, 1001, 1002, 1001]
+            )
+            self.assertEqual(validate(config_path, "test-run")["status"], "valid_completed")
+
+    def test_one_failed_prediction_within_three_percent_can_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path, targets, candidates, features = _prepare_workspace(
+                root, target_count=100
+            )
+            client = FakeDiscriminatorClient(prediction_fail_always={1001})
+            args = self._args(config_path, targets, candidates, features)
+            self.assertEqual(run(args, client_factory=lambda: client), "completed")
+
+            run_root = root / "discriminator-runs" / "test-run"
+            predictions = read_jsonl(run_root / "prediction" / "records.jsonl")
+            self.assertEqual(len(predictions), 99)
+            summary = load_json(run_root / "audit" / "summary.json")
+            self.assertEqual(summary["prediction"]["failed_indexes"], [1001])
+            self.assertEqual(summary["failure_tolerance"]["maximum_failure_rate"], 0.03)
+            self.assertEqual(summary["failure_tolerance"]["allowed_failure_count"], 3)
+            self.assertEqual(summary["failure_tolerance"]["validation_issue_count"], 1)
+            self.assertTrue(summary["failure_tolerance"]["within_tolerance"])
+            result = validate(config_path, "test-run")
+            self.assertEqual(result["status"], "valid_completed")
+            self.assertEqual(result["allowed_failures"], 3)
+            self.assertEqual(result["failed_predictions"], 1)
+
+    def test_failed_judgment_is_retained_as_empty_context_under_shared_quota(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path, targets, candidates, features = _prepare_workspace(
+                root, target_count=100
+            )
+            client = FakeDiscriminatorClient(fail_always={1001})
+            args = self._args(config_path, targets, candidates, features)
+            self.assertEqual(run(args, client_factory=lambda: client), "completed")
+
+            run_root = root / "discriminator-runs" / "test-run"
+            selected = read_jsonl(run_root / "selected" / "records.jsonl")
+            predictions = read_jsonl(run_root / "prediction" / "records.jsonl")
+            self.assertEqual(len(selected), 100)
+            self.assertEqual(len(predictions), 100)
+            placeholder = next(item for item in selected if item["idx"] == 1001)
+            self.assertEqual(placeholder["selected"], [])
+            self.assertEqual(placeholder["status"], "needs_review")
+            self.assertIn("exemplar_judgment_validation_failed", placeholder["review_reasons"])
+            self.assertIn(1001, client.prediction_calls)
+            summary = load_json(run_root / "audit" / "summary.json")
+            self.assertEqual(summary["failed_indexes"], [])
+            self.assertEqual(summary["validation_issue_indexes"], [1001])
+            self.assertEqual(summary["prediction"]["failed_indexes"], [])
+            self.assertTrue(summary["failure_tolerance"]["within_tolerance"])
+            self.assertEqual(validate(config_path, "test-run")["status"], "valid_completed")
+
+    def test_invalid_structured_output_is_repaired_and_audited(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path, targets, candidates, features = _prepare_workspace(root)
+            client = FakeDiscriminatorClient(fail_once={1001})
+            args = self._args(config_path, targets, candidates, features)
+            self.assertEqual(run(args, client_factory=lambda: client), "completed")
+            self.assertEqual(client.calls, [1001, 1001, 1002])
+            raw_path = root / "discriminator-runs" / "test-run" / "raw" / "responses.jsonl"
+            raw = read_jsonl(raw_path)
+            self.assertEqual(len(raw), 2)
+            self.assertEqual(raw[0]["status"], "complete")
+            self.assertEqual(len(raw[0]["repair"]["attempts"]), 2)
+            self.assertEqual(
+                raw[0]["repair"]["attempts"][0]["parse_error"]["type"],
+                "InstanceDiscriminatorError",
+            )
+            self.assertIsNone(raw[0]["repair"]["attempts"][1]["parse_error"])
+            self.assertEqual(validate(config_path, "test-run")["status"], "valid_completed")
+
+    def test_invalid_accepted_role_is_repaired_without_relaxing_parser(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path, targets, candidates, features = _prepare_workspace(root)
+            client = FakeDiscriminatorClient(invalid_role_once={1001})
+            args = self._args(config_path, targets, candidates, features)
+            self.assertEqual(run(args, client_factory=lambda: client), "completed")
+            self.assertEqual(client.calls, [1001, 1001, 1002])
+            raw = read_jsonl(
+                root / "discriminator-runs" / "test-run" / "raw" / "responses.jsonl"
+            )
+            first_error = raw[0]["repair"]["attempts"][0]["parse_error"]["message"]
+            self.assertIn("cannot be contrastive", first_error)
+            self.assertEqual(validate(config_path, "test-run")["status"], "valid_completed")
+
+    def test_partial_resume_and_retry_failed_are_explicit(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path, targets, candidates, features = _prepare_workspace(root)
+            client = FakeDiscriminatorClient(fail_always={1001})
+            args = self._args(config_path, targets, candidates, features)
+            self.assertEqual(run(args, client_factory=lambda: client), "partial")
+            self.assertEqual(client.calls, [1001, 1001, 1001, 1002])
+            raw_path = root / "discriminator-runs" / "test-run" / "raw" / "responses.jsonl"
+            first_raw = read_jsonl(raw_path)
+            self.assertEqual(len(first_raw), 2)
+            self.assertEqual(len(first_raw[0]["repair"]["attempts"]), 3)
+            self.assertIsNotNone(first_raw[0]["response"])
+
+            no_retry = self._args(
+                config_path,
+                targets,
+                candidates,
+                features,
+                allow_network=False,
+                resume=True,
+                confirm_full_run=False,
+            )
+            self.assertEqual(run(no_retry, client_factory=lambda: client), "partial")
+            self.assertEqual(client.calls, [1001, 1001, 1001, 1002])
             self.assertEqual(len(read_jsonl(raw_path)), 2)
+
+            manifest_path = root / "discriminator-runs" / "test-run" / "manifest.json"
+            manifest = load_json(manifest_path)
+            online_key = "code/instance_discriminator/online.py"
+            manifest["implementation"][online_key]["sha256"] = "0" * 64
+            atomic_write_json(manifest_path, manifest)
+            client.fail_always.clear()
 
             retry = self._args(
                 config_path,
@@ -475,8 +751,13 @@ class InstanceDiscriminatorTests(unittest.TestCase):
                 retry_failed=True,
             )
             self.assertEqual(run(retry, client_factory=lambda: client), "completed")
-            self.assertEqual(client.calls, [1001, 1002, 1001])
+            self.assertEqual(client.calls, [1001, 1001, 1001, 1002, 1001])
             self.assertEqual(len(read_jsonl(raw_path)), 3)
+            upgraded = load_json(manifest_path)
+            self.assertEqual(
+                upgraded["implementation_upgrades"][0]["id"],
+                "structured-output-repair-v1",
+            )
             self.assertEqual(validate(config_path, "test-run")["status"], "valid_completed")
 
     def test_safety_flags_fail_before_run_creation(self) -> None:

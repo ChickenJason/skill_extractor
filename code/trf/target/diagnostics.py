@@ -15,6 +15,12 @@ def build_diagnostics(
     retrieval_by_idx: dict[int, dict[str, Any]],
     bundle: dict[str, Any],
     review_sample_size: int,
+    predictions: list[dict[str, Any]],
+    latest_prediction_raw: dict[int, dict[str, Any]],
+    prediction_failures: list[dict[str, Any]],
+    prediction_results: list[dict[str, Any]],
+    validation_issues: list[dict[str, Any]],
+    prediction_policy: dict[str, Any],
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     parsed_by_idx = {record["idx"]: record for record in parsed}
     trf_items = [item for record in parsed for item in record["trfs"]]
@@ -30,12 +36,42 @@ def build_diagnostics(
         for idx in parsed_by_idx
         for item in retrieval_by_idx[idx]["neighbors"]
     ]
+    predictions_by_idx = {record["idx"]: record for record in predictions}
+    results_by_idx = {record["idx"]: record for record in prediction_results}
+    prediction_statuses = Counter(record["status"] for record in predictions)
+    prediction_spans = [span for record in predictions for span in record["spans"]]
     summary: dict[str, Any] = {
-        "schema_version": "target-trf-summary-v1",
+        "schema_version": "target-trf-summary-v4",
         "mode": mode,
         "expected_targets": len(targets),
         "parsed_targets": len(parsed),
         "missing_or_failed_targets": len(targets) - len(parsed),
+        "prediction_count": len(predictions),
+        "missing_or_failed_predictions": len(targets) - len(predictions),
+        "prediction_failures": len(prediction_failures),
+        "prediction_result_count": len(prediction_results),
+        "prediction_result_outcomes": dict(
+            sorted(Counter(item["outcome"] for item in prediction_results).items())
+        ),
+        "validation_issue_count": len(validation_issues),
+        "validation_issue_indexes": [item["idx"] for item in validation_issues],
+        "prediction_tolerance": prediction_policy,
+        "prediction_statuses": dict(sorted(prediction_statuses.items())),
+        "prediction_positive_count": sum(
+            record["has_skill"] == 1 for record in predictions
+        ),
+        "prediction_span_total": len(prediction_spans),
+        "prediction_repair_attempted_count": sum(
+            bool(record.get("repair")) for record in latest_prediction_raw.values()
+        ),
+        "prediction_repaired_count": sum(
+            record.get("status") == "complete" and bool(record.get("repair"))
+            for record in latest_prediction_raw.values()
+        ),
+        "prediction_recovered_count": sum(
+            record.get("status") == "complete" and bool(record.get("recovery"))
+            for record in latest_prediction_raw.values()
+        ),
         "statuses": dict(sorted(status_counts.items())),
         "entity_type_empty": sum(not record["entity_types"] for record in parsed),
         "entity_type_empty_rate": (
@@ -177,6 +213,8 @@ def build_diagnostics(
                 {
                     "review_category": category,
                     **record,
+                    "prediction": predictions_by_idx.get(record["idx"]),
+                    "prediction_result": results_by_idx.get(record["idx"]),
                     "retrieval": retrieval_by_idx[record["idx"]]["selected"],
                 }
             )
@@ -194,6 +232,8 @@ def build_diagnostics(
                 {
                     "review_category": "deterministic_fill",
                     **record,
+                    "prediction": predictions_by_idx.get(record["idx"]),
+                    "prediction_result": results_by_idx.get(record["idx"]),
                     "retrieval": retrieval_by_idx[record["idx"]]["selected"],
                 }
             )

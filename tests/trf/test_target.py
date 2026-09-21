@@ -27,6 +27,7 @@ from trf.target.common import (  # noqa: E402
 from trf.target.pipeline import (  # noqa: E402
     build_parsed_record,
     build_prompts,
+    build_skill_prediction_prompt,
     load_source_bundle,
     parse_entity_types,
     parse_target_trfs,
@@ -43,11 +44,20 @@ from tests.trf.fixtures import (  # noqa: E402
 
 
 class FakeTargetClient:
-    def __init__(self, fail_once: set[int] | None = None) -> None:
+    def __init__(
+        self,
+        fail_once: set[int] | None = None,
+        prediction_invalid_once: set[int] | None = None,
+        prediction_fail_always: set[int] | None = None,
+    ) -> None:
         self.embedding_calls: list[list[str]] = []
         self.chat_calls: list[list[dict[str, str]]] = []
         self.fail_once = set(fail_once or set())
+        self.prediction_invalid_once = set(prediction_invalid_once or set())
+        self.prediction_fail_always = set(prediction_fail_always or set())
         self.failed: set[int] = set()
+        self.prediction_failed: set[int] = set()
+        self.prediction_calls: list[int] = []
 
     @staticmethod
     def _vector(text: str, dimensions: int) -> list[float]:
@@ -101,7 +111,22 @@ class FakeTargetClient:
         self.chat_calls.append(messages)
         combined = "\n".join(item["content"] for item in messages)
         idx = self._target_idx(combined)
-        if idx in self.fail_once and idx not in self.failed:
+        if "TRF expert's final exact Skill span extractor" in combined:
+            self.prediction_calls.append(idx)
+            if idx in self.prediction_fail_always:
+                content = "not-json"
+            elif (
+                idx in self.prediction_invalid_once
+                and idx not in self.prediction_failed
+            ):
+                self.prediction_failed.add(idx)
+                content = "not-json"
+            else:
+                payload = json.loads(messages[1]["content"])
+                content = json.dumps(
+                    {"annotated_sentence": payload["target_sentence"]}, ensure_ascii=False
+                )
+        elif idx in self.fail_once and idx not in self.failed:
             self.failed.add(idx)
             content = "not-json"
         elif len(messages) == 1:
@@ -348,6 +373,15 @@ class TargetTRFTests(unittest.TestCase):
         )
         self.assertEqual(conflict["status"], "needs_review")
         self.assertEqual(conflict["review_reasons"], ["type_absent_but_trfs_nonempty"])
+        prediction_prompt = build_skill_prediction_prompt(target, conflict, 60000)
+        payload = json.loads(prediction_prompt["messages"][1]["content"])
+        self.assertEqual(payload["target_sentence"], target["sentence"])
+        self.assertEqual(payload["inferred_trfs"], ["C++", "open OOV"])
+        self.assertNotIn("demonstrations", payload)
+        self.assertEqual(
+            prediction_prompt["review_reasons"],
+            ["type_absent_but_trfs_nonempty", "no_entity_type"],
+        )
 
     def test_online_safety_flags_fail_before_creating_a_run(self) -> None:
         args = self._args(
@@ -374,6 +408,9 @@ class TargetTRFTests(unittest.TestCase):
             parsed = read_jsonl(run_root / "parsed" / "records.jsonl")
             self.assertEqual(len(parsed), 2)
             self.assertEqual(len(parsed[0]["trfs"]), 2)
+            predictions = read_jsonl(run_root / "prediction" / "records.jsonl")
+            self.assertEqual(len(predictions), 2)
+            self.assertTrue(all(item["branch"] == "trf" for item in predictions))
             retrieval = read_jsonl(run_root / "retrieval" / "records.jsonl")
             self.assertTrue(all(len(item["neighbors"]) == 50 for item in retrieval))
             self.assertTrue(all(len(item["selected"]) == 16 for item in retrieval))
@@ -431,6 +468,14 @@ class TargetTRFTests(unittest.TestCase):
             self.assertEqual(run(resumed, client_factory=lambda: client), "partial")
             raw = read_jsonl(run_root / "raw" / "responses.jsonl")
             calls_after_failure = len(raw)
+            parsed = read_jsonl(run_root / "parsed" / "records.jsonl")
+            placeholder = next(item for item in parsed if item["idx"] == 9001)
+            self.assertEqual(placeholder["trfs"], [])
+            self.assertEqual(placeholder["status"], "needs_review")
+            self.assertEqual(
+                placeholder["review_reasons"], ["trf_extraction_validation_failed"]
+            )
+            self.assertIn(9001, client.prediction_calls)
 
             no_retry = self._args(
                 config,
@@ -459,6 +504,97 @@ class TargetTRFTests(unittest.TestCase):
             self.assertEqual(set(latest), {9001, 9002})
             self.assertIn(latest[9001]["status"], {"complete", "needs_review"})
             self.assertEqual(validate(config, "test-run")["status"], "valid")
+
+    def test_failed_prediction_resume_does_not_repeat_trf_extraction(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            config, input_path, runs = self._workspace(directory)
+            client = FakeTargetClient(prediction_fail_always={9001})
+            args = self._args(config, input=str(input_path))
+            self.assertEqual(run(args, client_factory=lambda: client), "partial")
+            trf_calls = [
+                messages for messages in client.chat_calls if len(messages) in {1, 3}
+            ]
+            self.assertEqual(len(trf_calls), 4)
+            self.assertEqual(client.prediction_calls, [9001, 9001, 9001, 9002])
+            failures = read_jsonl(
+                runs / "test-run" / "target" / "prediction" / "failures.jsonl"
+            )
+            self.assertEqual(len(failures), 1)
+            self.assertEqual(failures[0]["idx"], 9001)
+            self.assertEqual(
+                failures[0]["sentence"], "TARGET-ID:9001 communication role"
+            )
+            self.assertEqual(failures[0]["failure_kind"], "validation_exhausted")
+            self.assertTrue(failures[0]["tolerance_eligible"])
+            self.assertEqual(failures[0]["model_output"], "not-json")
+
+            no_retry = self._args(
+                config,
+                input=str(input_path),
+                allow_network=False,
+                resume=True,
+                confirm_full_run=False,
+            )
+            self.assertEqual(run(no_retry, client_factory=lambda: client), "partial")
+            self.assertEqual(
+                len([m for m in client.chat_calls if len(m) in {1, 3}]), 4
+            )
+            self.assertEqual(client.prediction_calls, [9001, 9001, 9001, 9002])
+
+            client.prediction_fail_always.clear()
+            retry = self._args(
+                config,
+                input=str(input_path),
+                resume=True,
+                retry_failed=True,
+            )
+            self.assertEqual(run(retry, client_factory=lambda: client), "completed")
+            self.assertEqual(
+                len([m for m in client.chat_calls if len(m) in {1, 3}]), 4
+            )
+            self.assertEqual(
+                client.prediction_calls, [9001, 9001, 9001, 9002, 9001]
+            )
+            self.assertEqual(
+                read_jsonl(
+                    runs / "test-run" / "target" / "prediction" / "failures.jsonl"
+                ),
+                [],
+            )
+            self.assertEqual(validate(config, "test-run")["status"], "valid")
+
+    def test_terminal_prediction_failure_within_three_percent_can_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            targets = [
+                {
+                    "idx": 9000 + offset,
+                    "sentence": f"TARGET-ID:{9000 + offset} skill sentence",
+                }
+                for offset in range(1, 101)
+            ]
+            config, input_path, runs = self._workspace(directory, targets)
+            client = FakeTargetClient(prediction_fail_always={9001})
+            args = self._args(config, input=str(input_path))
+            self.assertEqual(run(args, client_factory=lambda: client), "completed")
+            run_root = runs / "test-run" / "target"
+            failures = read_jsonl(run_root / "prediction" / "failures.jsonl")
+            self.assertEqual([item["idx"] for item in failures], [9001])
+            self.assertEqual(
+                load_json(run_root / "manifest.json")["summary"][
+                    "prediction_tolerance"
+                ]["failure_rate"],
+                0.01,
+            )
+            self.assertEqual(
+                load_json(run_root / "manifest.json")["summary"][
+                    "prediction_tolerance"
+                ]["allowed_failure_count"],
+                3,
+            )
+            result = validate(config, "test-run")
+            self.assertEqual(result["status"], "valid")
+            self.assertEqual(result["predictions"], 99)
+            self.assertEqual(result["prediction_failures"], 1)
 
     def test_embedding_reuse_requires_exact_target_set(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

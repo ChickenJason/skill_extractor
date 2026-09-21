@@ -1,0 +1,51 @@
+{
+  "schema_version": "bidirectional-interaction-gate-spec-v1",
+  "gate_id": "trf-exemplar-bidirectional-smoke3-v1",
+  "base_concurrent_run_id": "skill-concurrent-v1",
+  "underlying_protocol": "trf-exemplar-synchronous-v1",
+  "targets": [
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "50", "idx": 50,
+      "sentence": "It is expected that you are a super user of the MS office tools - especially Excel and PPT .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "candidate_mixed"],
+      "trf_anchors": {"must_keep": ["tools"], "must_drop": ["techniques", "independently", "basic", "years"]},
+      "exemplar_anchors": [
+        {"demo_idx": 176, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "Microsoft Office proficiency is directly transferable."},
+        {"demo_idx": 63, "minimum_score": 1, "maximum_score": 3, "expected_role": "irrelevant", "expected_selected": false, "expected_change_from_baseline": true, "rationale": "TRF evidence should remove the generic development negative from selection."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "115", "idx": 115,
+      "sentence": "Product / Project Management skills",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["nonempty_baseline_trf", "exemplar_needs_review", "candidate_mixed", "baseline_zero_selected"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 109, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": true, "rationale": "Project-management evidence should resolve the zero-selection baseline."},
+        {"demo_idx": 315, "minimum_score": 1, "maximum_score": 3, "expected_role": "contrastive", "expected_selected": false, "expected_change_from_baseline": null, "rationale": "The negative management context is low-utility contrast."}
+      ]
+    },
+    {
+      "dataset_id": "skill-sentences-326-v1", "record_id": "312", "idx": 312,
+      "sentence": "The team is very dynamic and we have a high pace in our normal work days .",
+      "source_sha256": "09e6a02333b2ced02533d57fdf59d1323f27d00e74100a97bf10e25721b86668",
+      "strata": ["empty_baseline_trf_control", "candidate_negative_heavy", "candidate_mixed"],
+      "trf_anchors": {"must_keep": [], "must_drop": []},
+      "exemplar_anchors": [
+        {"demo_idx": 90, "minimum_score": 4, "maximum_score": 5, "expected_role": "contrastive", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "A close negative work-style boundary should be retained."},
+        {"demo_idx": 108, "minimum_score": 4, "maximum_score": 5, "expected_role": "supporting", "expected_selected": true, "expected_change_from_baseline": null, "rationale": "The accepted pace-related example should be retained."}
+      ]
+    }
+  ],
+  "acceptance": {
+    "target_count": 3,
+    "required_exemplar_anchors": 6,
+    "required_keep_anchors": 1,
+    "required_drop_anchors": 4,
+    "minimum_changed_exemplar_anchors": 2,
+    "maximum_model_responses": 15,
+    "maximum_repair_responses": 3,
+    "required_failed_records": 0
+  }
+}

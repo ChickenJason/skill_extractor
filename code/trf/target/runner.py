@@ -1,4 +1,4 @@
-"""Run target-sentence retrieval and two-turn open TRF extraction."""
+"""Run target retrieval, open TRF extraction, and TRF-guided Skill prediction."""
 
 from __future__ import annotations
 
@@ -24,6 +24,17 @@ from common.io_utils import (  # noqa: E402
     utc_now,
 )
 from common.qwen_client import QwenClient, QwenRequestError, QwenSettings  # noqa: E402
+from common.skill_prediction import (  # noqa: E402
+    SkillPredictionNetworkRequired,
+    build_prediction_failure_records,
+    build_prediction_result_records,
+    evaluate_result_completion,
+    merge_validation_issue_records,
+    parse_successful_prediction_records,
+    prediction_validation_issue_events,
+    run_skill_predictions,
+    unavailable_prediction_result,
+)
 from trf.target.common import (  # noqa: E402
     TargetRunPaths,
     TargetTRFError,
@@ -42,11 +53,12 @@ from trf.target.online import (  # noqa: E402
     NetworkRequiredError,
     ensure_embeddings,
     load_reuse_embeddings,
-    parse_successful_raw_records,
+    parse_terminal_raw_records,
     run_two_turn_extraction,
 )
 from trf.target.pipeline import (  # noqa: E402
     build_prompts,
+    build_skill_prediction_prompt,
     build_targets,
     load_source_bundle,
     retrieve_demonstrations,
@@ -172,6 +184,7 @@ def _recoverable_error(error: Exception) -> bool:
         error,
         (
             NetworkRequiredError,
+            SkillPredictionNetworkRequired,
             MissingEnvironmentVariable,
             QwenRequestError,
         ),
@@ -222,6 +235,12 @@ def run(args: argparse.Namespace, *, client_factory: Callable[[], QwenClient] | 
     prompt_path = paths.prompts / "records.jsonl"
     raw_path = paths.raw / "responses.jsonl"
     parsed_path = paths.parsed / "records.jsonl"
+    prediction_prompt_path = paths.prediction / "prompts.jsonl"
+    prediction_raw_path = paths.prediction / "raw.jsonl"
+    prediction_path = paths.prediction / "records.jsonl"
+    prediction_failure_path = paths.prediction / "failures.jsonl"
+    prediction_results_path = paths.prediction / "results.jsonl"
+    validation_issues_path = paths.audit / "validation_issues.jsonl"
     summary_path = paths.audit / "summary.json"
     review_path = paths.audit / "manual_review.jsonl"
 
@@ -315,12 +334,14 @@ def run(args: argparse.Namespace, *, client_factory: Callable[[], QwenClient] | 
 
         if args.prepare_only:
             update_stage(paths, "extract_target_trfs", "pending")
+            update_stage(paths, "predict_target_skills", "pending")
             update_stage(paths, "diagnostics", "pending")
             prepared_summary = {
                 "status": "prepared",
                 "target_count": len(targets),
                 "retrieval_count": len(retrieval_records),
                 "online_extraction_performed": False,
+                "target_skill_prediction_performed": False,
             }
             atomic_write_json(summary_path, prepared_summary)
             _write_terminal_manifest(
@@ -349,7 +370,7 @@ def run(args: argparse.Namespace, *, client_factory: Callable[[], QwenClient] | 
             secrets=secret_values,
             on_network_call=lambda: _set_network_called(paths),
         )
-        parsed = parse_successful_raw_records(
+        parsed, extraction_validation_events, extraction_blockers = parse_terminal_raw_records(
             targets,
             latest_raw,
             bundle["main_trfs"],
@@ -357,8 +378,95 @@ def run(args: argparse.Namespace, *, client_factory: Callable[[], QwenClient] | 
             config["chat"]["model"],
         )
         atomic_write_jsonl(parsed_path, parsed)
-        complete = len(parsed) == len(targets)
-        update_stage(paths, "extract_target_trfs", "completed" if complete else "partial")
+        extraction_ready = len(parsed) == len(targets) and not extraction_blockers
+        parsed_by_idx = {item["idx"]: item for item in parsed}
+        prediction_prompts = [
+            build_skill_prediction_prompt(
+                target,
+                parsed_by_idx[target["idx"]],
+                config["chat"]["max_prompt_characters"],
+            )
+            for target in targets
+            if target["idx"] in parsed_by_idx
+        ]
+        atomic_write_jsonl(prediction_prompt_path, prediction_prompts)
+        latest_prediction_raw = run_skill_predictions(
+            prediction_prompts,
+            prediction_raw_path,
+            chat_model=config["chat"]["model"],
+            temperature=config["chat"]["temperature"],
+            max_tokens=config["chat"]["stage3_max_tokens"],
+            maximum_repairs=config["chat"]["prediction_repair_attempts"],
+            allow_network=args.allow_network,
+            retry_failed=args.retry_failed,
+            client_factory=provider_factory,
+            secrets=secret_values,
+            on_network_call=lambda: _set_network_called(paths),
+        )
+        predictions = parse_successful_prediction_records(
+            prediction_prompts,
+            latest_prediction_raw,
+            chat_model=config["chat"]["model"],
+            maximum_repairs=config["chat"]["prediction_repair_attempts"],
+        )
+        atomic_write_jsonl(prediction_path, predictions)
+        prediction_failures = build_prediction_failure_records(
+            prediction_prompts,
+            latest_prediction_raw,
+            maximum_repairs=config["chat"]["prediction_repair_attempts"],
+        )
+        atomic_write_jsonl(prediction_failure_path, prediction_failures)
+        prompt_results = build_prediction_result_records(
+            prediction_prompts,
+            predictions,
+            prediction_failures,
+            latest_prediction_raw,
+        )
+        prompt_results_by_idx = {item["idx"]: item for item in prompt_results}
+        results = []
+        for target in targets:
+            if target["idx"] in prompt_results_by_idx:
+                results.append(prompt_results_by_idx[target["idx"]])
+                continue
+            blocker = extraction_blockers.get(target["idx"])
+            results.append(
+                unavailable_prediction_result(
+                    target,
+                    branch="trf",
+                    outcome="runtime_failed" if blocker else "missing",
+                    failure_kind=(blocker or {}).get("failure_kind", "missing_prediction_prompt"),
+                    review_reasons=["trf_extraction_failed_or_missing"],
+                    failure=blocker,
+                )
+            )
+        validation_issues = merge_validation_issue_records(
+            targets,
+            [
+                *extraction_validation_events,
+                *prediction_validation_issue_events(
+                    prompt_results, stage="trf_skill_prediction"
+                ),
+            ],
+        )
+        atomic_write_jsonl(prediction_results_path, results)
+        atomic_write_jsonl(validation_issues_path, validation_issues)
+        prediction_policy = evaluate_result_completion(
+            expected_count=len(targets),
+            results=results,
+            validation_issues=validation_issues,
+            maximum_failure_rate=config["chat"]["prediction_max_failure_rate"],
+        )
+        prediction_complete = prediction_policy["within_tolerance"]
+        update_stage(
+            paths,
+            "extract_target_trfs",
+            "completed" if extraction_ready and prediction_complete else "partial",
+        )
+        update_stage(
+            paths,
+            "predict_target_skills",
+            "completed" if prediction_complete else "partial",
+        )
         summary, review = build_diagnostics(
             args.mode,
             targets,
@@ -366,9 +474,16 @@ def run(args: argparse.Namespace, *, client_factory: Callable[[], QwenClient] | 
             retrieval_by_idx,
             bundle,
             config["diagnostics"]["review_sample_size"],
+            predictions,
+            latest_prediction_raw,
+            prediction_failures,
+            results,
+            validation_issues,
+            prediction_policy,
         )
         atomic_write_json(summary_path, summary)
         atomic_write_jsonl(review_path, review)
+        complete = prediction_complete
         update_stage(paths, "diagnostics", "completed" if complete else "partial")
         final_status = "completed" if complete else "partial"
         _write_terminal_manifest(

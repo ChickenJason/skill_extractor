@@ -15,7 +15,8 @@ DEMONSTRATION_RECORD_SCHEMA = "demonstration-record-v1"
 DEMONSTRATION_AUDIT_SCHEMA = "demonstration-audit-v1"
 CANDIDATE_INSTANCES_SCHEMA = "candidate-instances-v1"
 FEATURE_RECORDS_SCHEMA = "feature-records-v1"
-INSTANCE_JUDGMENTS_SCHEMA = "instance-judgments-v1"
+INSTANCE_JUDGMENTS_SCHEMA = "instance-judgments-v2"
+SKILL_PREDICTION_SCHEMA = "skill-prediction-v1"
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 

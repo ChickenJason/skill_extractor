@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-BUSINESS_MODULES = {"self_annotator", "trf", "instance_discriminator"}
+BUSINESS_MODULES = {"self_annotator", "trf", "instance_discriminator", "aggregator"}
 
 
 class ArchitectureTests(unittest.TestCase):

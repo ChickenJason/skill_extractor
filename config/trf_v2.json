@@ -1,0 +1,89 @@
+{
+    "schema_version":  1,
+    "module":  "trf",
+    "output":  {
+                   "runs_root":  "output/trf"
+               },
+    "offline":  {
+                    "schema_version":  1,
+                    "pipeline_version":  "trf-offline-v2",
+                    "source":  {
+                                   "demonstrations":  "data/processed/demonstrations/v2/manifest.json",
+                                   "expected_counts":  {
+                                                           "total":  326,
+                                                           "accepted":  230,
+                                                           "negative":  89,
+                                                           "unsolved":  7,
+                                                           "abstained":  0,
+                                                           "formal":  319
+                                                       }
+                               },
+                    "tokenization":  {
+                                         "normalization":  "NFKC",
+                                         "technical_characters":  ".+#/-",
+                                         "exclude_tokens_containing_digits":  true,
+                                         "stopwords":  "scikit-learn-english",
+                                         "anonymous_placeholder_pattern":  "\u003c[A-Z][A-Z0-9_-]*\u003e"
+                                     },
+                    "candidates":  {
+                                       "type":  "Skill",
+                                       "max_trfs":  20,
+                                       "rho":  3.0,
+                                       "direction_gate":  true,
+                                       "mi_log_base":  "natural"
+                                   },
+                    "model":  {
+                                  "name":  "bert-base-cased",
+                                  "revision":  "cd5ef92a9fb2f889e972770a36d4ed042daf221e",
+                                  "hidden_size":  768,
+                                  "max_subwords":  512,
+                                  "top_k":  5,
+                                  "seed":  42,
+                                  "device":  "cpu",
+                                  "distance_decimals":  8
+                              }
+                },
+    "target":  {
+                   "schema_version":  1,
+                   "pipeline_version":  "trf-target-extractor-v4",
+                   "configuration_role":  "module-template",
+                   "targets":  {
+                                   "independent_input":  "data/raw/synthetic_jd_sentences_100.json"
+                               },
+                   "provider":  {
+                                    "name":  "aliyun-model-studio",
+                                    "api_key":  "${DASHSCOPE_API_KEY}",
+                                    "base_url":  "${DASHSCOPE_BASE_URL}"
+                                },
+                   "embedding":  {
+                                     "model":  "qwen3.7-text-embedding",
+                                     "dimensions":  1024,
+                                     "batch_size":  20
+                                 },
+                   "retrieval":  {
+                                     "nearest_neighbors":  50,
+                                     "demonstrations":  16,
+                                     "similarity_decimals":  10
+                                 },
+                   "candidates":  {
+                                      "expected_main_trfs":  20
+                                  },
+                   "chat":  {
+                                "model":  "qwen3.7-plus-2026-05-26",
+                                "enable_thinking":  false,
+                                "structured_output":  true,
+                                "temperature":  0.0,
+                                "stage1_max_tokens":  128,
+                                "stage2_max_tokens":  512,
+                                "stage3_max_tokens":  512,
+                                "prediction_repair_attempts":  2,
+                                "prediction_max_failure_rate":  0.03,
+                                "timeout_seconds":  120,
+                                "max_retries":  5,
+                                "max_prompt_characters":  60000
+                            },
+                   "diagnostics":  {
+                                       "review_sample_size":  20
+                                   }
+               }
+}

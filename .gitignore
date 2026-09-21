@@ -55,13 +55,17 @@ htmlcov/
 /models/
 /huggingface/
 
-# Generated outputs for the three peer modules
+# Generated outputs for the three peer modules and the orchestration layer
 /output/self_annotator/*
 !/output/self_annotator/.gitkeep
 /output/trf/*
 !/output/trf/.gitkeep
 /output/instance_discriminator/*
 !/output/instance_discriminator/.gitkeep
+/output/second_layer/*
+!/output/second_layer/.gitkeep
+/output/aggregator/*
+!/output/aggregator/.gitkeep
 
 # Local scratch notes
 /333.md
